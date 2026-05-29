@@ -1,0 +1,14 @@
+{
+  "domain": "dishwasher_duty",
+  "name": "Dishwasher Duty",
+  "version": "1.0.0",
+  "codeowners": ["@schmidtjohannes"],
+  "config_flow": true,
+  "documentation": "https://github.com/schmidtjohannes/dishwasher_duty",
+  "issue_tracker": "https://github.com/schmidtjohannes/dishwasher_duty/issues",
+  "integration_type": "service",
+  "iot_class": "calculated",
+  "after_dependencies": ["person"],
+  "dependencies": [],
+  "requirements": []
+}

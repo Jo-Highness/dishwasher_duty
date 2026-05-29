@@ -1,0 +1,83 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Dishwasher Duty",
+        "description": "Registra quién vacía el lavavajillas. Elige el sensor de origen (p. ej. el sensor \"Operation state\" de Home Connect) y las personas que pueden reclamar un ciclo.",
+        "data": {
+          "source_sensor": "Sensor de origen",
+          "finished_value": "Valor de estado \"Terminado\"",
+          "running_value": "Valor de estado \"En marcha\"",
+          "persons": "Personas autorizadas",
+          "allow_co_claim": "Permitir vaciado compartido (co-reclamación)",
+          "co_claim_window": "Ventana de co-reclamación (segundos)",
+          "debounce_seconds": "Antirrebote (segundos, 0 = desactivado)"
+        }
+      }
+    },
+    "error": {
+      "no_persons": "Selecciona al menos una persona.",
+      "no_finished_value": "Introduce el valor de estado que significa \"terminado\"."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Ajustes de Dishwasher Duty",
+        "description": "Ajusta el sensor de origen, los valores de estado terminado/en marcha, las personas autorizadas y el comportamiento de co-reclamación.",
+        "data": {
+          "source_sensor": "Sensor de origen",
+          "finished_value": "Valor de estado \"Terminado\"",
+          "running_value": "Valor de estado \"En marcha\"",
+          "persons": "Personas autorizadas",
+          "allow_co_claim": "Permitir vaciado compartido (co-reclamación)",
+          "co_claim_window": "Ventana de co-reclamación (segundos)",
+          "debounce_seconds": "Antirrebote (segundos, 0 = desactivado)"
+        }
+      }
+    },
+    "error": {
+      "no_persons": "Selecciona al menos una persona.",
+      "no_finished_value": "Introduce el valor de estado que significa \"terminado\"."
+    }
+  },
+  "services": {
+    "claim": {
+      "name": "Reclamar",
+      "description": "Reclama el ciclo abierto actual para una persona.",
+      "fields": {
+        "person": {"name": "Persona", "description": "ID de entidad person o su slug."}
+      }
+    },
+    "claim_multiple": {
+      "name": "Reclamar (varios)",
+      "description": "Reclama el ciclo abierto para varias personas a la vez (crédito repartido equitativamente).",
+      "fields": {
+        "persons": {"name": "Personas", "description": "Lista de IDs de entidades person."}
+      }
+    },
+    "cancel_claim": {
+      "name": "Cancelar reclamación",
+      "description": "Retira la reclamación de una persona mientras la ventana siga abierta.",
+      "fields": {
+        "person": {"name": "Persona", "description": "ID de entidad person o su slug."}
+      }
+    },
+    "get_statistics": {
+      "name": "Obtener estadísticas",
+      "description": "Devuelve estadísticas estructuradas de vaciado para un periodo.",
+      "fields": {
+        "start": {"name": "Inicio", "description": "Inicio del periodo (incluido)."},
+        "end": {"name": "Fin", "description": "Fin del periodo (incluido)."},
+        "person": {"name": "Persona", "description": "Opcional: limitar a una persona."}
+      }
+    },
+    "reset_statistics": {
+      "name": "Restablecer estadísticas",
+      "description": "Restablece el historial de ciclos (todo o de una persona).",
+      "fields": {
+        "person": {"name": "Persona", "description": "Opcional: restablecer solo esta persona."}
+      }
+    }
+  }
+}

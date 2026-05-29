@@ -1,0 +1,83 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Dishwasher Duty",
+        "description": "Verfolge, wer die Spülmaschine ausräumt. Wähle den Quell-Sensor (z. B. den Home-Connect-Sensor \"Operation state\") und die Personen, die einen Zyklus claimen dürfen.",
+        "data": {
+          "source_sensor": "Quell-Sensor",
+          "finished_value": "\"Fertig\"-Statuswert",
+          "running_value": "\"Läuft\"-Statuswert",
+          "persons": "Berechtigte Personen",
+          "allow_co_claim": "Gemeinsames Ausräumen erlauben (Co-Claim)",
+          "co_claim_window": "Co-Claim-Fenster (Sekunden)",
+          "debounce_seconds": "Entprellung (Sekunden, 0 = aus)"
+        }
+      }
+    },
+    "error": {
+      "no_persons": "Wähle mindestens eine Person.",
+      "no_finished_value": "Gib den Statuswert für \"fertig\" an."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Dishwasher-Duty-Einstellungen",
+        "description": "Passe Quell-Sensor, Fertig-/Läuft-Statuswerte, berechtigte Personen und das Co-Claim-Verhalten an.",
+        "data": {
+          "source_sensor": "Quell-Sensor",
+          "finished_value": "\"Fertig\"-Statuswert",
+          "running_value": "\"Läuft\"-Statuswert",
+          "persons": "Berechtigte Personen",
+          "allow_co_claim": "Gemeinsames Ausräumen erlauben (Co-Claim)",
+          "co_claim_window": "Co-Claim-Fenster (Sekunden)",
+          "debounce_seconds": "Entprellung (Sekunden, 0 = aus)"
+        }
+      }
+    },
+    "error": {
+      "no_persons": "Wähle mindestens eine Person.",
+      "no_finished_value": "Gib den Statuswert für \"fertig\" an."
+    }
+  },
+  "services": {
+    "claim": {
+      "name": "Claimen",
+      "description": "Den aktuell offenen Zyklus für eine Person claimen.",
+      "fields": {
+        "person": {"name": "Person", "description": "Person-Entität-ID oder Slug."}
+      }
+    },
+    "claim_multiple": {
+      "name": "Claimen (mehrere)",
+      "description": "Den offenen Zyklus für mehrere Personen gleichzeitig claimen (Gutschrift wird gleichmäßig geteilt).",
+      "fields": {
+        "persons": {"name": "Personen", "description": "Liste von Person-Entitäten-IDs."}
+      }
+    },
+    "cancel_claim": {
+      "name": "Claim zurückziehen",
+      "description": "Den Claim einer Person zurückziehen, solange das Claim-Fenster offen ist.",
+      "fields": {
+        "person": {"name": "Person", "description": "Person-Entität-ID oder Slug."}
+      }
+    },
+    "get_statistics": {
+      "name": "Statistik abrufen",
+      "description": "Strukturierte Ausräum-Statistik für einen Zeitraum zurückgeben.",
+      "fields": {
+        "start": {"name": "Start", "description": "Beginn des Zeitraums (inklusive)."},
+        "end": {"name": "Ende", "description": "Ende des Zeitraums (inklusive)."},
+        "person": {"name": "Person", "description": "Optional - auf eine Person beschränken."}
+      }
+    },
+    "reset_statistics": {
+      "name": "Statistik zurücksetzen",
+      "description": "Gespeicherte Zyklus-Historie zurücksetzen (gesamt oder für eine Person).",
+      "fields": {
+        "person": {"name": "Person", "description": "Optional - nur diese Person zurücksetzen."}
+      }
+    }
+  }
+}

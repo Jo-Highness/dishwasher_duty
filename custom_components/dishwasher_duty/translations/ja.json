@@ -1,0 +1,83 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Dishwasher Duty",
+        "description": "食洗機を片付けた人を記録します。ソースセンサー（例: Home Connect の「Operation state」センサー）と、サイクルをクレームできる人物を選びます。",
+        "data": {
+          "source_sensor": "ソースセンサー",
+          "finished_value": "「終了」状態の値",
+          "running_value": "「運転中」状態の値",
+          "persons": "対象の人物",
+          "allow_co_claim": "共同の片付けを許可（コクレーム）",
+          "co_claim_window": "コクレーム時間枠（秒）",
+          "debounce_seconds": "デバウンス（秒、0 = 無効）"
+        }
+      }
+    },
+    "error": {
+      "no_persons": "少なくとも1人を選択してください。",
+      "no_finished_value": "「終了」を意味する状態の値を入力してください。"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Dishwasher Duty 設定",
+        "description": "ソースセンサー、終了／運転中の状態値、対象の人物、コクレームの動作を調整します。",
+        "data": {
+          "source_sensor": "ソースセンサー",
+          "finished_value": "「終了」状態の値",
+          "running_value": "「運転中」状態の値",
+          "persons": "対象の人物",
+          "allow_co_claim": "共同の片付けを許可（コクレーム）",
+          "co_claim_window": "コクレーム時間枠（秒）",
+          "debounce_seconds": "デバウンス（秒、0 = 無効）"
+        }
+      }
+    },
+    "error": {
+      "no_persons": "少なくとも1人を選択してください。",
+      "no_finished_value": "「終了」を意味する状態の値を入力してください。"
+    }
+  },
+  "services": {
+    "claim": {
+      "name": "クレーム",
+      "description": "現在開いているサイクルを1人分クレームします。",
+      "fields": {
+        "person": {"name": "人物", "description": "person エンティティID またはスラッグ。"}
+      }
+    },
+    "claim_multiple": {
+      "name": "クレーム（複数）",
+      "description": "開いているサイクルを複数人で同時にクレームします（クレジットは均等配分）。",
+      "fields": {
+        "persons": {"name": "人物（複数）", "description": "person エンティティID のリスト。"}
+      }
+    },
+    "cancel_claim": {
+      "name": "クレーム取消",
+      "description": "時間枠が開いている間に、ある人物のクレームを取り消します。",
+      "fields": {
+        "person": {"name": "人物", "description": "person エンティティID またはスラッグ。"}
+      }
+    },
+    "get_statistics": {
+      "name": "統計を取得",
+      "description": "指定期間の片付け統計を構造化して返します。",
+      "fields": {
+        "start": {"name": "開始", "description": "期間の開始（含む）。"},
+        "end": {"name": "終了", "description": "期間の終了（含む）。"},
+        "person": {"name": "人物", "description": "任意 — 1人に限定。"}
+      }
+    },
+    "reset_statistics": {
+      "name": "統計をリセット",
+      "description": "保存されたサイクル履歴をリセットします（全体または1人分）。",
+      "fields": {
+        "person": {"name": "人物", "description": "任意 — この人物のみリセット。"}
+      }
+    }
+  }
+}

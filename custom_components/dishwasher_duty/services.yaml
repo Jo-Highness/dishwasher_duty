@@ -1,0 +1,77 @@
+claim:
+  name: Claim
+  description: Claim the currently open cycle for one person.
+  fields:
+    person:
+      name: Person
+      description: Person entity id (e.g. person.luke) or its slug.
+      required: true
+      example: person.luke
+      selector:
+        entity:
+          domain: person
+
+claim_multiple:
+  name: Claim (multiple)
+  description: Claim the open cycle for several people at once (credit shared equally).
+  fields:
+    persons:
+      name: Persons
+      description: List of person entity ids.
+      required: true
+      example: "[person.luke, person.leo]"
+      selector:
+        entity:
+          domain: person
+          multiple: true
+
+cancel_claim:
+  name: Cancel claim
+  description: Withdraw a person's claim while the claim window is still open.
+  fields:
+    person:
+      name: Person
+      description: Person entity id or slug.
+      required: true
+      example: person.luke
+      selector:
+        entity:
+          domain: person
+
+get_statistics:
+  name: Get statistics
+  description: Return structured unload statistics for a time range (service response).
+  fields:
+    start:
+      name: Start
+      description: Start of the range (inclusive). Omit for "from the beginning".
+      required: false
+      selector:
+        datetime:
+    end:
+      name: End
+      description: End of the range (inclusive). Omit for "until now".
+      required: false
+      selector:
+        datetime:
+    person:
+      name: Person
+      description: Optional - limit the per-person breakdown to one person.
+      required: false
+      selector:
+        entity:
+          domain: person
+
+reset_statistics:
+  name: Reset statistics
+  description: >-
+    Reset stored cycle history. Without a person ALL history and credits are
+    cleared; with a person only that person's claims/credits are removed.
+  fields:
+    person:
+      name: Person
+      description: Optional - reset only this person's data.
+      required: false
+      selector:
+        entity:
+          domain: person

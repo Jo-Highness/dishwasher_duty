@@ -1,0 +1,83 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Dishwasher Duty",
+        "description": "Suit qui vide le lave-vaisselle. Choisissez le capteur source (par ex. le capteur \"Operation state\" de Home Connect) et les personnes autorisées à revendiquer un cycle.",
+        "data": {
+          "source_sensor": "Capteur source",
+          "finished_value": "Valeur d'état \"Terminé\"",
+          "running_value": "Valeur d'état \"En marche\"",
+          "persons": "Personnes autorisées",
+          "allow_co_claim": "Autoriser le vidage partagé (co-revendication)",
+          "co_claim_window": "Fenêtre de co-revendication (secondes)",
+          "debounce_seconds": "Anti-rebond (secondes, 0 = désactivé)"
+        }
+      }
+    },
+    "error": {
+      "no_persons": "Sélectionnez au moins une personne.",
+      "no_finished_value": "Saisissez la valeur d'état signifiant \"terminé\"."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Paramètres de Dishwasher Duty",
+        "description": "Ajustez le capteur source, les valeurs d'état terminé/en marche, les personnes autorisées et le comportement de co-revendication.",
+        "data": {
+          "source_sensor": "Capteur source",
+          "finished_value": "Valeur d'état \"Terminé\"",
+          "running_value": "Valeur d'état \"En marche\"",
+          "persons": "Personnes autorisées",
+          "allow_co_claim": "Autoriser le vidage partagé (co-revendication)",
+          "co_claim_window": "Fenêtre de co-revendication (secondes)",
+          "debounce_seconds": "Anti-rebond (secondes, 0 = désactivé)"
+        }
+      }
+    },
+    "error": {
+      "no_persons": "Sélectionnez au moins une personne.",
+      "no_finished_value": "Saisissez la valeur d'état signifiant \"terminé\"."
+    }
+  },
+  "services": {
+    "claim": {
+      "name": "Revendiquer",
+      "description": "Revendique le cycle ouvert actuel pour une personne.",
+      "fields": {
+        "person": {"name": "Personne", "description": "ID d'entité person ou son slug."}
+      }
+    },
+    "claim_multiple": {
+      "name": "Revendiquer (plusieurs)",
+      "description": "Revendique le cycle ouvert pour plusieurs personnes (crédit partagé équitablement).",
+      "fields": {
+        "persons": {"name": "Personnes", "description": "Liste d'ID d'entités person."}
+      }
+    },
+    "cancel_claim": {
+      "name": "Annuler la revendication",
+      "description": "Retire la revendication d'une personne tant que la fenêtre est ouverte.",
+      "fields": {
+        "person": {"name": "Personne", "description": "ID d'entité person ou son slug."}
+      }
+    },
+    "get_statistics": {
+      "name": "Obtenir les statistiques",
+      "description": "Renvoie des statistiques de vidage structurées pour une période.",
+      "fields": {
+        "start": {"name": "Début", "description": "Début de la période (inclus)."},
+        "end": {"name": "Fin", "description": "Fin de la période (inclus)."},
+        "person": {"name": "Personne", "description": "Optionnel - limiter à une personne."}
+      }
+    },
+    "reset_statistics": {
+      "name": "Réinitialiser les statistiques",
+      "description": "Réinitialise l'historique des cycles (tout ou pour une personne).",
+      "fields": {
+        "person": {"name": "Personne", "description": "Optionnel - réinitialiser uniquement cette personne."}
+      }
+    }
+  }
+}

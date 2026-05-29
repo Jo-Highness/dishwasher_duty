@@ -1,0 +1,83 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Dishwasher Duty",
+        "description": "Track who unloads the dishwasher. Pick the source sensor (e.g. the Home Connect \"Operation state\" sensor) and the people who may claim a cycle.",
+        "data": {
+          "source_sensor": "Source sensor",
+          "finished_value": "\"Finished\" state value",
+          "running_value": "\"Running\" state value",
+          "persons": "Eligible persons",
+          "allow_co_claim": "Allow shared unloading (co-claim)",
+          "co_claim_window": "Co-claim window (seconds)",
+          "debounce_seconds": "Debounce (seconds, 0 = off)"
+        }
+      }
+    },
+    "error": {
+      "no_persons": "Select at least one person.",
+      "no_finished_value": "Enter the state value that means \"finished\"."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Dishwasher Duty settings",
+        "description": "Adjust the source sensor, the finished/running state values, the eligible persons and the co-claim behaviour.",
+        "data": {
+          "source_sensor": "Source sensor",
+          "finished_value": "\"Finished\" state value",
+          "running_value": "\"Running\" state value",
+          "persons": "Eligible persons",
+          "allow_co_claim": "Allow shared unloading (co-claim)",
+          "co_claim_window": "Co-claim window (seconds)",
+          "debounce_seconds": "Debounce (seconds, 0 = off)"
+        }
+      }
+    },
+    "error": {
+      "no_persons": "Select at least one person.",
+      "no_finished_value": "Enter the state value that means \"finished\"."
+    }
+  },
+  "services": {
+    "claim": {
+      "name": "Claim",
+      "description": "Claim the currently open cycle for one person.",
+      "fields": {
+        "person": {"name": "Person", "description": "Person entity id or slug."}
+      }
+    },
+    "claim_multiple": {
+      "name": "Claim (multiple)",
+      "description": "Claim the open cycle for several people at once (credit shared equally).",
+      "fields": {
+        "persons": {"name": "Persons", "description": "List of person entity ids."}
+      }
+    },
+    "cancel_claim": {
+      "name": "Cancel claim",
+      "description": "Withdraw a person's claim while the claim window is still open.",
+      "fields": {
+        "person": {"name": "Person", "description": "Person entity id or slug."}
+      }
+    },
+    "get_statistics": {
+      "name": "Get statistics",
+      "description": "Return structured unload statistics for a time range.",
+      "fields": {
+        "start": {"name": "Start", "description": "Start of the range (inclusive)."},
+        "end": {"name": "End", "description": "End of the range (inclusive)."},
+        "person": {"name": "Person", "description": "Optional - limit to one person."}
+      }
+    },
+    "reset_statistics": {
+      "name": "Reset statistics",
+      "description": "Reset stored cycle history (all, or for one person).",
+      "fields": {
+        "person": {"name": "Person", "description": "Optional - reset only this person."}
+      }
+    }
+  }
+}

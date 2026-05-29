@@ -1,0 +1,83 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Dishwasher Duty",
+        "description": "Spor hvem som tømmer oppvaskmaskinen. Velg kildesensoren (f.eks. Home Connect-sensoren \"Operation state\") og personene som kan kreve en syklus.",
+        "data": {
+          "source_sensor": "Kildesensor",
+          "finished_value": "\"Ferdig\"-tilstandsverdi",
+          "running_value": "\"Kjører\"-tilstandsverdi",
+          "persons": "Berettigede personer",
+          "allow_co_claim": "Tillat delt tømming (co-claim)",
+          "co_claim_window": "Co-claim-vindu (sekunder)",
+          "debounce_seconds": "Avstudsing (sekunder, 0 = av)"
+        }
+      }
+    },
+    "error": {
+      "no_persons": "Velg minst én person.",
+      "no_finished_value": "Angi tilstandsverdien som betyr \"ferdig\"."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Dishwasher Duty-innstillinger",
+        "description": "Juster kildesensor, ferdig-/kjører-verdier, berettigede personer og co-claim-atferd.",
+        "data": {
+          "source_sensor": "Kildesensor",
+          "finished_value": "\"Ferdig\"-tilstandsverdi",
+          "running_value": "\"Kjører\"-tilstandsverdi",
+          "persons": "Berettigede personer",
+          "allow_co_claim": "Tillat delt tømming (co-claim)",
+          "co_claim_window": "Co-claim-vindu (sekunder)",
+          "debounce_seconds": "Avstudsing (sekunder, 0 = av)"
+        }
+      }
+    },
+    "error": {
+      "no_persons": "Velg minst én person.",
+      "no_finished_value": "Angi tilstandsverdien som betyr \"ferdig\"."
+    }
+  },
+  "services": {
+    "claim": {
+      "name": "Krev",
+      "description": "Krev den åpne syklusen for én person.",
+      "fields": {
+        "person": {"name": "Person", "description": "Person-entitets-ID eller slug."}
+      }
+    },
+    "claim_multiple": {
+      "name": "Krev (flere)",
+      "description": "Krev den åpne syklusen for flere personer samtidig (kreditt deles likt).",
+      "fields": {
+        "persons": {"name": "Personer", "description": "Liste over person-entitets-IDer."}
+      }
+    },
+    "cancel_claim": {
+      "name": "Avbryt krav",
+      "description": "Trekk tilbake en persons krav mens vinduet fortsatt er åpent.",
+      "fields": {
+        "person": {"name": "Person", "description": "Person-entitets-ID eller slug."}
+      }
+    },
+    "get_statistics": {
+      "name": "Hent statistikk",
+      "description": "Returnerer strukturert tømmestatistikk for et tidsrom.",
+      "fields": {
+        "start": {"name": "Start", "description": "Start på tidsrommet (inkludert)."},
+        "end": {"name": "Slutt", "description": "Slutt på tidsrommet (inkludert)."},
+        "person": {"name": "Person", "description": "Valgfritt - begrens til én person."}
+      }
+    },
+    "reset_statistics": {
+      "name": "Nullstill statistikk",
+      "description": "Nullstiller lagret syklushistorikk (alt eller for én person).",
+      "fields": {
+        "person": {"name": "Person", "description": "Valgfritt - nullstill kun denne personen."}
+      }
+    }
+  }
+}
