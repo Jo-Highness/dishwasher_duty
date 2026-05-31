@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="icon.png" alt="Dishwasher Duty" width="160" height="160">
+</p>
+
 # Dishwasher Duty
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
