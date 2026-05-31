@@ -1,7 +1,7 @@
 {
   "domain": "dishwasher_duty",
   "name": "Dishwasher Duty",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "codeowners": ["@Jo-Highness"],
   "config_flow": true,
   "documentation": "https://github.com/Jo-Highness/dishwasher_duty",
