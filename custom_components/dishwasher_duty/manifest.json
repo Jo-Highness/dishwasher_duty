@@ -1,14 +1,18 @@
 {
   "domain": "dishwasher_duty",
   "name": "Dishwasher Duty",
-  "version": "1.0.1",
-  "codeowners": ["@Jo-Highness"],
+  "after_dependencies": [
+    "person"
+  ],
+  "codeowners": [
+    "@Jo-Highness"
+  ],
   "config_flow": true,
+  "dependencies": [],
   "documentation": "https://github.com/Jo-Highness/dishwasher_duty",
-  "issue_tracker": "https://github.com/Jo-Highness/dishwasher_duty/issues",
   "integration_type": "service",
   "iot_class": "calculated",
-  "after_dependencies": ["person"],
-  "dependencies": [],
-  "requirements": []
+  "issue_tracker": "https://github.com/Jo-Highness/dishwasher_duty/issues",
+  "requirements": [],
+  "version": "1.0.1"
 }
