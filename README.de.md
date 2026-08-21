@@ -40,6 +40,8 @@ Gutschrift von **1,0 pro Zyklus** wird – bei gemeinsamem Ausräumen – anteil
 
 ### Installation (HACS)
 
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Jo-Highness&repository=dishwasher_duty&category=integration)
+
 1. HACS → ⋮ → *Benutzerdefinierte Repositories* → dieses Repo als Kategorie **Integration**.
 2. *Dishwasher Duty* herunterladen, Home Assistant neu starten.
 3. *Einstellungen → Geräte & Dienste → Integration hinzufügen → „Dishwasher Duty"*.
