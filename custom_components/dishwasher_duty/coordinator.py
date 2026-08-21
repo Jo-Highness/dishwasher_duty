@@ -10,8 +10,8 @@ statistics.
 from __future__ import annotations
 
 import asyncio
-import logging
 from datetime import date, datetime, timedelta
+import logging
 from typing import Any
 
 from homeassistant.config_entries import ConfigEntry
@@ -40,7 +40,6 @@ from .const import (
     DEFAULT_FINISHED_VALUE,
     DEFAULT_RUNNING_VALUE,
     DOMAIN,
-    IGNORED_STATES,
     STATUS_CLAIMED,
     STATUS_UNCLAIMED,
     STORAGE_KEY_PREFIX,
@@ -76,9 +75,7 @@ class DishwasherDutyCoordinator(DataUpdateCoordinator[dict]):
         super().__init__(hass, _LOGGER, config_entry=entry, name=DOMAIN)
         self.entry = entry
         self._config = {**entry.data, **entry.options}
-        self._store: Store = Store(
-            hass, STORAGE_VERSION, f"{STORAGE_KEY_PREFIX}{entry.entry_id}"
-        )
+        self._store: Store = Store(hass, STORAGE_VERSION, f"{STORAGE_KEY_PREFIX}{entry.entry_id}")
         self._lock = asyncio.Lock()
         self._unsubs: list = []
         self._unsub_timer = None
@@ -136,9 +133,7 @@ class DishwasherDutyCoordinator(DataUpdateCoordinator[dict]):
         )
         # Recompute the daily/period attributes at local midnight.
         self._unsubs.append(
-            async_track_time_change(
-                self.hass, self._handle_midnight, hour=0, minute=0, second=5
-            )
+            async_track_time_change(self.hass, self._handle_midnight, hour=0, minute=0, second=5)
         )
 
         # Re-arm or resolve a co-claim window that was open across a restart.
@@ -176,9 +171,7 @@ class DishwasherDutyCoordinator(DataUpdateCoordinator[dict]):
             "last_state": self._last_state,
             "claim_open": self._claim_open,
             "current_cycle_id": self._current_cycle_id,
-            "co_claim_until": (
-                self._co_claim_until.isoformat() if self._co_claim_until else None
-            ),
+            "co_claim_until": (self._co_claim_until.isoformat() if self._co_claim_until else None),
         }
 
     def _save(self) -> None:
@@ -196,7 +189,9 @@ class DishwasherDutyCoordinator(DataUpdateCoordinator[dict]):
         until = stored.get("co_claim_until")
         self._co_claim_until = dt_util.parse_datetime(until) if until else None
         _LOGGER.debug(
-            "%s: restored %d cycles, claim_open=%s", DOMAIN, self.total_cycles,
+            "%s: restored %d cycles, claim_open=%s",
+            DOMAIN,
+            self.total_cycles,
             self._claim_open,
         )
 
@@ -257,7 +252,9 @@ class DishwasherDutyCoordinator(DataUpdateCoordinator[dict]):
         self._cancel_timer()
         _LOGGER.info(
             "%s: cycle %s finished (#%d) -> claim window open",
-            DOMAIN, cycle_id, self.total_cycles,
+            DOMAIN,
+            cycle_id,
+            self.total_cycles,
         )
         self._save()
 
@@ -287,9 +284,7 @@ class DishwasherDutyCoordinator(DataUpdateCoordinator[dict]):
             changed = False
             for person in normalized:
                 if person not in self.persons:
-                    raise ServiceValidationError(
-                        f"{person} is not an authorised person"
-                    )
+                    raise ServiceValidationError(f"{person} is not an authorised person")
                 if person in cycle["claimers"]:
                     continue  # idempotent: one contribution per person/cycle
                 cycle["claimers"].append(person)
@@ -302,9 +297,7 @@ class DishwasherDutyCoordinator(DataUpdateCoordinator[dict]):
                 self._finalize_locked(cycle)
             elif self._co_claim_until is None:
                 # First claim starts the co-claim window.
-                self._co_claim_until = dt_util.utcnow() + timedelta(
-                    seconds=self.co_claim_window
-                )
+                self._co_claim_until = dt_util.utcnow() + timedelta(seconds=self.co_claim_window)
                 self._schedule_co_claim_timer(self._co_claim_until)
             self._save()
         self.async_set_updated_data(self._snapshot())
@@ -345,7 +338,10 @@ class DishwasherDutyCoordinator(DataUpdateCoordinator[dict]):
             cycle["claimed_at"] = dt_util.utcnow().isoformat()
             _LOGGER.info(
                 "%s: cycle %s claimed by %s -> %s",
-                DOMAIN, cycle["cycle_id"], cycle["claimers"], cycle["credits"],
+                DOMAIN,
+                cycle["cycle_id"],
+                cycle["claimers"],
+                cycle["credits"],
             )
         self._claim_open = False
         self._current_cycle_id = None
@@ -364,8 +360,7 @@ class DishwasherDutyCoordinator(DataUpdateCoordinator[dict]):
         if cycle["claimers"]:
             self._finalize_locked(cycle)
         else:
-            _LOGGER.info("%s: cycle %s left unclaimed (new run)", DOMAIN,
-                         cycle["cycle_id"])
+            _LOGGER.info("%s: cycle %s left unclaimed (new run)", DOMAIN, cycle["cycle_id"])
             self._claim_open = False
             self._current_cycle_id = None
             self._co_claim_until = None
@@ -377,9 +372,7 @@ class DishwasherDutyCoordinator(DataUpdateCoordinator[dict]):
     # ------------------------------------------------------------------
     def _schedule_co_claim_timer(self, when: datetime) -> None:
         self._cancel_timer()
-        self._unsub_timer = async_track_point_in_time(
-            self.hass, self._on_co_claim_timeout, when
-        )
+        self._unsub_timer = async_track_point_in_time(self.hass, self._on_co_claim_timeout, when)
 
     def _cancel_timer(self) -> None:
         if self._unsub_timer:
@@ -443,8 +436,11 @@ class DishwasherDutyCoordinator(DataUpdateCoordinator[dict]):
             if local.date() >= starts["year"]:
                 totals["credits_this_year"] += credit
         for key in (
-            "credits_total", "credits_today", "credits_this_week",
-            "credits_this_month", "credits_this_year",
+            "credits_total",
+            "credits_today",
+            "credits_this_week",
+            "credits_this_month",
+            "credits_this_year",
         ):
             totals[key] = round(totals[key], 2)
         return totals
@@ -482,9 +478,7 @@ class DishwasherDutyCoordinator(DataUpdateCoordinator[dict]):
             for claimer, credit in cycle.get("credits", {}).items():
                 if person and claimer != person:
                     continue
-                stats = per_person.setdefault(
-                    claimer, {"participations": 0, "credits": 0.0}
-                )
+                stats = per_person.setdefault(claimer, {"participations": 0, "credits": 0.0})
                 stats["participations"] += 1
                 stats["credits"] = round(stats["credits"] + credit, 2)
 
@@ -535,9 +529,7 @@ class DishwasherDutyCoordinator(DataUpdateCoordinator[dict]):
             "co_claim_window_until": (
                 self._co_claim_until.isoformat() if self._co_claim_until else None
             ),
-            "last_cycle_finished": (
-                self.cycles[-1]["finished_timestamp"] if self.cycles else None
-            ),
+            "last_cycle_finished": (self.cycles[-1]["finished_timestamp"] if self.cycles else None),
             "last_claim_credits": self._last_claim_credits(),
             "current_cycle_claimed_by": cycle["claimers"] if cycle else [],
         }

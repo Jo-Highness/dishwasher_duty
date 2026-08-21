@@ -4,8 +4,6 @@ from __future__ import annotations
 
 import logging
 
-import voluptuous as vol
-
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import (
     HomeAssistant,
@@ -16,6 +14,7 @@ from homeassistant.core import (
 from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import config_validation as cv
 from homeassistant.util import dt as dt_util
+import voluptuous as vol
 
 from .const import (
     ATTR_END,
@@ -52,9 +51,7 @@ RESET_SCHEMA = vol.Schema({vol.Optional(ATTR_PERSON): cv.string})
 
 def _coordinators(hass: HomeAssistant) -> list[DishwasherDutyCoordinator]:
     return [
-        c
-        for c in hass.data.get(DOMAIN, {}).values()
-        if isinstance(c, DishwasherDutyCoordinator)
+        c for c in hass.data.get(DOMAIN, {}).values() if isinstance(c, DishwasherDutyCoordinator)
     ]
 
 
@@ -130,15 +127,18 @@ def _async_register_services(hass: HomeAssistant) -> None:
 
     hass.services.async_register(DOMAIN, SERVICE_CLAIM, _handle_claim, schema=CLAIM_SCHEMA)
     hass.services.async_register(
-        DOMAIN, SERVICE_CLAIM_MULTIPLE, _handle_claim_multiple,
+        DOMAIN,
+        SERVICE_CLAIM_MULTIPLE,
+        _handle_claim_multiple,
         schema=CLAIM_MULTIPLE_SCHEMA,
     )
+    hass.services.async_register(DOMAIN, SERVICE_CANCEL_CLAIM, _handle_cancel, schema=CANCEL_SCHEMA)
     hass.services.async_register(
-        DOMAIN, SERVICE_CANCEL_CLAIM, _handle_cancel, schema=CANCEL_SCHEMA
-    )
-    hass.services.async_register(
-        DOMAIN, SERVICE_GET_STATISTICS, _handle_get_statistics,
-        schema=GET_STATS_SCHEMA, supports_response=SupportsResponse.ONLY,
+        DOMAIN,
+        SERVICE_GET_STATISTICS,
+        _handle_get_statistics,
+        schema=GET_STATS_SCHEMA,
+        supports_response=SupportsResponse.ONLY,
     )
     hass.services.async_register(
         DOMAIN, SERVICE_RESET_STATISTICS, _handle_reset, schema=RESET_SCHEMA
@@ -163,6 +163,4 @@ async def _dispatch_claim(hass: HomeAssistant, persons: list[str]) -> None:
         except ServiceValidationError as err:
             last_error = err
     if not handled:
-        raise last_error or ServiceValidationError(
-            "None of the given persons are authorised"
-        )
+        raise last_error or ServiceValidationError("None of the given persons are authorised")
