@@ -41,6 +41,14 @@ and a running total-cycles counter — perfect for a family chore leaderboard.
 - **Services & buttons** for convenient claiming, correcting and reporting.
 - Translated into **German, English, Spanish, French, Greek, Japanese, Norwegian Bokmål**.
 
+## Screenshots
+
+> Captured from a demo Home Assistant with fictional data.
+
+| Setup (config flow) | Entities card in use |
+|:---:|:---:|
+| ![The UI setup form](images/config-flow.png) | ![Claimable, total cycles and per-person credits](images/dashboard.png) |
+
 ## Installation
 
 ### HACS (recommended)
