@@ -56,9 +56,7 @@ async def test_claim_service_end_to_end(hass):
     assert coordinator.total_cycles == 1
 
     # Claim via the service (co-claim disabled -> immediate finalise).
-    await hass.services.async_call(
-        DOMAIN, SERVICE_CLAIM, {"person": "person.alice"}, blocking=True
-    )
+    await hass.services.async_call(DOMAIN, SERVICE_CLAIM, {"person": "person.alice"}, blocking=True)
     await hass.async_block_till_done()
 
     assert coordinator.person_stats("person.alice")["credits_total"] == 1.0

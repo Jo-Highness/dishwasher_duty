@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-import pytest
 from freezegun import freeze_time
 from homeassistant.exceptions import ServiceValidationError
+import pytest
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.dishwasher_duty.const import DOMAIN
