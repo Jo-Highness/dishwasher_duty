@@ -1,6 +1,18 @@
 __pycache__/
 *.py[cod]
 .pytest_cache/
+.ruff_cache/
 .venv/
 venv/
 .coverage
+htmlcov/
+
+# Home Assistant runtime storage
+.storage/
+
+# Editor / OS artefacts
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
