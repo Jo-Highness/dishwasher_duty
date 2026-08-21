@@ -18,6 +18,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Sorted `manifest.json` keys to satisfy hassfest.
+- Added README screenshots (config flow, entities card) from a demo instance.
+
+### Fixed
+- The `claim` / `cancel_claim` / `reset_statistics` services now accept a
+  person's **display name** and a case-insensitive **slug**, as the service
+  fields document ("Name (or slug)"). Previously only the exact `person.<id>`
+  entity id or its exact-case slug matched, so calling `claim` with a name like
+  `Mia` failed with "not an authorised person" (HTTP 500). Covered by tests.
 
 ## [1.0.1] - 2026-05-31
 

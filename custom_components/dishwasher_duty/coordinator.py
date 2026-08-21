@@ -383,11 +383,25 @@ class DishwasherDutyCoordinator(DataUpdateCoordinator[dict]):
     # Statistics
     # ------------------------------------------------------------------
     def _normalize_person(self, person: str) -> str:
-        """Accept either 'person.x' or 'x' and return the configured id."""
+        """Resolve a person reference to a configured entity id.
+
+        The ``claim`` / ``cancel_claim`` services document "Name (or slug)", so
+        accept the configured entity id (``person.mia``), its object-id slug
+        (``mia`` / ``Mia``, case-insensitive) or the person's display name
+        (``Mia``). Returns the input unchanged if nothing matches.
+        """
         if person in self.persons:
             return person
+        needle = person.strip().casefold()
         for configured in self.persons:
-            if person_key(configured) == person or configured == f"person.{person}":
+            if (
+                configured.casefold() == needle
+                or person_key(configured).casefold() == needle
+                or configured.casefold() == f"person.{needle}"
+            ):
+                return configured
+            state = self.hass.states.get(configured)
+            if state is not None and (state.name or "").casefold() == needle:
                 return configured
         return person
 

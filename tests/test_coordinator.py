@@ -192,3 +192,23 @@ def _cycle(cid: str, ts: str, credits: dict) -> dict:
         "claimed_at": ts,
         "status": "claimed",
     }
+
+
+# --------------------------------------------------------------------------
+# Person resolution: the services document "Name (or slug)"
+# --------------------------------------------------------------------------
+async def test_claim_by_slug_case_insensitive(make_coordinator):
+    """Claiming with the object-id slug in any case resolves the configured person."""
+    c = await make_coordinator(allow_co_claim=False)
+    await feed(c, "Run", "Finished")
+    await c.async_claim("Alice")  # capitalised slug, not the exact entity id
+    assert c.cycles[-1]["credits"] == {"person.alice": 1.0}
+
+
+async def test_claim_by_display_name(hass, make_coordinator):
+    """Claiming with the person's friendly name resolves the configured person."""
+    hass.states.async_set("person.alice", "home", {"friendly_name": "Alice Example"})
+    c = await make_coordinator(allow_co_claim=False)
+    await feed(c, "Run", "Finished")
+    await c.async_claim("Alice Example")
+    assert c.cycles[-1]["credits"] == {"person.alice": 1.0}
