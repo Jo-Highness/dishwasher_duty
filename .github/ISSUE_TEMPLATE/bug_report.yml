@@ -1,0 +1,91 @@
+name: Bug report
+description: Report a problem with the Dishwasher Duty integration
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug! Please fill in as much
+        detail as possible so the issue can be reproduced.
+  - type: input
+    id: ha_version
+    attributes:
+      label: Home Assistant version
+      description: Settings → About (e.g. 2026.8.1)
+      placeholder: "2026.8.1"
+    validations:
+      required: true
+  - type: input
+    id: integration_version
+    attributes:
+      label: Dishwasher Duty version
+      description: The installed integration version (e.g. 1.0.1)
+      placeholder: "1.0.1"
+    validations:
+      required: true
+  - type: input
+    id: source_sensor
+    attributes:
+      label: Source sensor
+      description: The entity ID of the sensor used to detect the dishwasher cycle.
+      placeholder: "sensor.dishwasher_operation_state"
+    validations:
+      required: true
+  - type: input
+    id: finished_value
+    attributes:
+      label: Configured "finished" value
+      description: The value that marks a cycle as finished (e.g. Finished).
+      placeholder: "Finished"
+    validations:
+      required: true
+  - type: input
+    id: running_value
+    attributes:
+      label: Configured "running" value
+      description: The value that marks a cycle as running (e.g. Run).
+      placeholder: "Run"
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What actually happened?
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Debug logs
+      description: |
+        Enable debug logging, reproduce the issue, and paste the relevant logs.
+        Add this to your `configuration.yaml` and restart:
+
+        ```yaml
+        logger:
+          default: warning
+          logs:
+            custom_components.dishwasher_duty: debug
+        ```
+      render: text
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I am running the latest version of the integration.
+          required: true
+        - label: I searched existing issues and did not find a duplicate.
+          required: true
+        - label: I included the source sensor's finished/running values above.
+          required: true
