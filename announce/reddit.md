@@ -15,6 +15,6 @@ It watches a dishwasher **state sensor** for a configured "finished" value. When
 - It's a bookkeeping/credit tool, **not an appliance controller**.
 - Credit is tracked only for the configured persons.
 
-**Details:** v1.0.1, min HA 2024.1, MIT, UI in 7 languages (DE/EN/ES/FR/EL/JA/NB). Install via HACS as a custom repository (`Jo-Highness/dishwasher_duty`); default store once accepted.
+**Details:** v1.0.1, min HA 2024.11, MIT, UI in 7 languages (DE/EN/ES/FR/EL/JA/NB). Install via HACS as a custom repository (`Jo-Highness/dishwasher_duty`); default store once accepted.
 
 Feedback welcome.

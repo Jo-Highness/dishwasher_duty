@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `hacs.json` declared Home Assistant 2024.1.0 as minimum, but the integration uses
+  `ConfigFlowResult` (2024.4) and `DataUpdateCoordinator(config_entry=...)` (2024.11) and
+  fails to set up on older versions. Minimum raised to **2024.11.0** (README badge updated).
+- The coordinator's `async_shutdown` now also runs the base-class shutdown.
+
 ## [1.0.2] - 2026-08-21
 
 ### Added

@@ -160,6 +160,7 @@ class DishwasherDutyCoordinator(DataUpdateCoordinator[dict]):
             self._unsub_timer = None
         async with self._lock:
             await self._store.async_save(self._build_storage_data())
+        await super().async_shutdown()
 
     # ------------------------------------------------------------------
     # Persistence

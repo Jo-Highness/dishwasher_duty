@@ -13,7 +13,7 @@
 [![Tests](https://github.com/Jo-Highness/dishwasher_duty/actions/workflows/test.yml/badge.svg)](https://github.com/Jo-Highness/dishwasher_duty/actions/workflows/test.yml)
 [![Release](https://img.shields.io/github/v/release/Jo-Highness/dishwasher_duty)](https://github.com/Jo-Highness/dishwasher_duty/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2024.1%2B-41BDF5.svg)](https://www.home-assistant.io/)
+[![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2024.11%2B-41BDF5.svg)](https://www.home-assistant.io/)
 
 ---
 

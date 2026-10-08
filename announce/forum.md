@@ -57,7 +57,7 @@ Via **HACS**. For now add it as a **custom repository** (`Jo-Highness/dishwasher
 ## Details
 
 - Version **1.0.1**
-- Minimum Home Assistant: **2024.1**
+- Minimum Home Assistant: **2024.11**
 - Licence: **MIT**
 - UI translated into **7 languages**: DE, EN, ES, FR, EL, JA, NB
 
