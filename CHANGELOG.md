@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.3] - 2026-10-09
+
+> **Note:** this patch release raises the minimum Home Assistant version to **2024.11.0** (see Fixed). Older versions could not set up the integration anyway.
+
 ### Fixed
 
 - `hacs.json` declared Home Assistant 2024.1.0 as minimum, but the integration uses
@@ -51,6 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   dishwasher, award credits, and expose statistics.
 - Test suite and documentation.
 
-[Unreleased]: https://github.com/Jo-Highness/dishwasher_duty/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/Jo-Highness/dishwasher_duty/compare/v1.0.3...HEAD
+[1.0.3]: https://github.com/Jo-Highness/dishwasher_duty/compare/v1.0.2...v1.0.3
 [1.0.1]: https://github.com/Jo-Highness/dishwasher_duty/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/Jo-Highness/dishwasher_duty/releases/tag/v1.0.0
