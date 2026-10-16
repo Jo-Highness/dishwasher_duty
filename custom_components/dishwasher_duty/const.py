@@ -4,6 +4,8 @@ from __future__ import annotations
 
 DOMAIN = "dishwasher_duty"
 
+DEFAULT_TITLE = "Dishwasher Duty"
+
 # --- Config / Options keys -------------------------------------------------
 CONF_SOURCE_SENSOR = "source_sensor"
 CONF_FINISHED_VALUE = "finished_value"
@@ -14,18 +16,20 @@ CONF_CO_CLAIM_WINDOW = "co_claim_window"
 CONF_DEBOUNCE = "debounce_seconds"
 
 # --- Defaults --------------------------------------------------------------
-# Home Connect's "Operation state" sensor reports the finished/running phases.
-# Depending on HA/integration version this is either the enum tail
-# ("Finished"/"Run") or a normalised lowercase value. These are editable so
-# other devices/languages can be covered.
-DEFAULT_FINISHED_VALUE = "Finished"
-DEFAULT_RUNNING_VALUE = "Run"
+# Home Connect's "Operation state" sensor is an ENUM sensor that reports
+# lowercase values ("run", "finished", ...) since HA 2025.1. Older versions
+# reported "Run"/"Finished". State values are compared case-insensitively, so
+# both spellings match; other devices can use any custom value.
+DEFAULT_FINISHED_VALUE = "finished"
+DEFAULT_RUNNING_VALUE = "run"
 DEFAULT_ALLOW_CO_CLAIM = True
 DEFAULT_CO_CLAIM_WINDOW = 90  # seconds
 DEFAULT_DEBOUNCE = 0  # seconds; 0 = off
 
-# States that must never be treated as a running/finished phase.
-IGNORED_STATES = {"unavailable", "unknown", "none", ""}
+# Source-sensor states that are never treated as a phase. They are not stored
+# as the "previous state" either, so run -> unavailable -> finished still
+# counts as one cycle while unavailable -> finished (without run) does not.
+IGNORED_STATES = frozenset({"unavailable", "unknown", "none", ""})
 
 # --- Storage ---------------------------------------------------------------
 STORAGE_VERSION = 1
@@ -42,13 +46,14 @@ SERVICE_CANCEL_CLAIM = "cancel_claim"
 SERVICE_GET_STATISTICS = "get_statistics"
 SERVICE_RESET_STATISTICS = "reset_statistics"
 
+ATTR_CONFIG_ENTRY_ID = "config_entry_id"
 ATTR_PERSON = "person"
 ATTR_PERSONS = "persons"
 ATTR_START = "start"
 ATTR_END = "end"
 
-# --- Dispatcher ------------------------------------------------------------
-SIGNAL_UPDATE = f"{DOMAIN}_update"
+# --- Repairs ---------------------------------------------------------------
+ISSUE_SOURCE_SENSOR_MISSING = "source_sensor_missing"
 
 # --- Entity attribute keys -------------------------------------------------
 ATTR_LAST_CYCLE_FINISHED = "last_cycle_finished"
