@@ -1,0 +1,42 @@
+{
+  "entity": {
+    "binary_sensor": {
+      "claimable": {
+        "default": "mdi:hand-back-right",
+        "state": {
+          "off": "mdi:hand-back-right-off"
+        }
+      }
+    },
+    "button": {
+      "claim": {
+        "default": "mdi:hand-back-right-outline"
+      }
+    },
+    "sensor": {
+      "person_credits": {
+        "default": "mdi:account-check"
+      },
+      "total_cycles": {
+        "default": "mdi:dishwasher"
+      }
+    }
+  },
+  "services": {
+    "cancel_claim": {
+      "service": "mdi:hand-back-right-off-outline"
+    },
+    "claim": {
+      "service": "mdi:hand-back-right"
+    },
+    "claim_multiple": {
+      "service": "mdi:account-multiple-check"
+    },
+    "get_statistics": {
+      "service": "mdi:chart-bar"
+    },
+    "reset_statistics": {
+      "service": "mdi:delete-sweep"
+    }
+  }
+}

@@ -43,6 +43,34 @@ def build_data(**overrides: Any) -> dict[str, Any]:
     return data
 
 
+async def setup_integration(
+    hass,
+    *,
+    sensor_state: str | None = "inactive",
+    entry: MockConfigEntry | None = None,
+    **overrides: Any,
+) -> MockConfigEntry:
+    """Create (unless given), set up and return a Dishwasher Duty entry."""
+    if entry is None:
+        data = build_data(**overrides)
+        entry = MockConfigEntry(
+            domain=DOMAIN,
+            title="Dishwasher Duty",
+            data=data,
+            unique_id=data[CONF_SOURCE_SENSOR],
+            version=1,
+            minor_version=2,
+        )
+    if hass.config_entries.async_get_entry(entry.entry_id) is None:
+        entry.add_to_hass(hass)
+    source = {**entry.data, **entry.options}[CONF_SOURCE_SENSOR]
+    if sensor_state is not None and hass.states.get(source) is None:
+        hass.states.async_set(source, sensor_state)
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+    return entry
+
+
 @pytest.fixture
 def make_coordinator(
     hass,

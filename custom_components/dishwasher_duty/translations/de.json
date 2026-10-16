@@ -3,42 +3,133 @@
     "step": {
       "user": {
         "title": "Dishwasher Duty",
-        "description": "Verfolge, wer die Spülmaschine ausräumt. Wähle den Quell-Sensor (z. B. den Home-Connect-Sensor \"Operation state\") und die Personen, die einen Zyklus claimen dürfen.",
+        "description": "Verfolge, wer die Spülmaschine ausräumt. Wähle zuerst den Sensor, der den Programmstatus deiner Spülmaschine meldet, z. B. den Home-Connect-Sensor \"Operation state\" (Betriebszustand).",
         "data": {
-          "source_sensor": "Quell-Sensor",
-          "finished_value": "\"Fertig\"-Statuswert",
+          "source_sensor": "Quell-Sensor"
+        },
+        "data_description": {
+          "source_sensor": "Ein Sensor, dessen Zustand während eines Programms auf einen \"Läuft\"-Wert und am Ende auf einen \"Fertig\"-Wert wechselt."
+        }
+      },
+      "settings": {
+        "title": "Zustände, Personen und gemeinsames Ausräumen",
+        "description": "Quell-Sensor: `{sensor}`. Wähle die Zustände, die er beim Laufen und am Ende meldet - die Liste kommt vom Sensor, eigene Werte sind erlaubt. Groß-/Kleinschreibung spielt keine Rolle.",
+        "data": {
           "running_value": "\"Läuft\"-Statuswert",
+          "finished_value": "\"Fertig\"-Statuswert",
           "persons": "Berechtigte Personen",
           "allow_co_claim": "Gemeinsames Ausräumen erlauben (Co-Claim)",
-          "co_claim_window": "Co-Claim-Fenster (Sekunden)",
-          "debounce_seconds": "Entprellung (Sekunden, 0 = aus)"
+          "co_claim_window": "Co-Claim-Fenster",
+          "debounce_seconds": "Entprellung"
+        },
+        "data_description": {
+          "running_value": "Zustand, während ein Programm läuft. Home Connect: `run`.",
+          "finished_value": "Zustand, wenn ein Programm beendet ist. Home Connect: `finished`. Nur ein Wechsel vom Läuft- auf diesen Wert öffnet einen claimbaren Zyklus.",
+          "persons": "Personen, die einen Claim-Knopf und einen Gutschrift-Sensor bekommen.",
+          "allow_co_claim": "Wenn aktiv, können nach dem ersten Claim weitere Personen innerhalb des Co-Claim-Fensters beitreten; die Gutschrift von 1,0 wird geteilt.",
+          "co_claim_window": "Sekunden nach dem ersten Claim, in denen weitere Personen beitreten können (5-600).",
+          "debounce_seconds": "Einen weiteren Fertig-Zyklus innerhalb so vieler Sekunden nach dem vorigen ignorieren (0 = aus). Hilft bei flatternden Sensoren."
         }
       }
     },
     "error": {
       "no_persons": "Wähle mindestens eine Person.",
-      "no_finished_value": "Gib den Statuswert für \"fertig\" an."
+      "no_finished_value": "Gib den Statuswert für \"fertig\" an.",
+      "no_running_value": "Gib den Statuswert für \"läuft\" an.",
+      "same_values": "Die Werte für \"fertig\" und \"läuft\" müssen sich unterscheiden."
+    },
+    "abort": {
+      "already_configured": "Dieser Sensor wird bereits von Dishwasher Duty verfolgt."
     }
   },
   "options": {
     "step": {
       "init": {
         "title": "Dishwasher-Duty-Einstellungen",
-        "description": "Passe Quell-Sensor, Fertig-/Läuft-Statuswerte, berechtigte Personen und das Co-Claim-Verhalten an.",
+        "description": "Quell-Sensor ändern. Im nächsten Schritt folgen alle weiteren Einstellungen.",
         "data": {
-          "source_sensor": "Quell-Sensor",
-          "finished_value": "\"Fertig\"-Statuswert",
+          "source_sensor": "Quell-Sensor"
+        },
+        "data_description": {
+          "source_sensor": "Ein Sensor, dessen Zustand während eines Programms auf einen \"Läuft\"-Wert und am Ende auf einen \"Fertig\"-Wert wechselt."
+        }
+      },
+      "settings": {
+        "title": "Zustände, Personen und gemeinsames Ausräumen",
+        "description": "Quell-Sensor: `{sensor}`. Wähle die Zustände, die er beim Laufen und am Ende meldet - die Liste kommt vom Sensor, eigene Werte sind erlaubt. Groß-/Kleinschreibung spielt keine Rolle.",
+        "data": {
           "running_value": "\"Läuft\"-Statuswert",
+          "finished_value": "\"Fertig\"-Statuswert",
           "persons": "Berechtigte Personen",
           "allow_co_claim": "Gemeinsames Ausräumen erlauben (Co-Claim)",
-          "co_claim_window": "Co-Claim-Fenster (Sekunden)",
-          "debounce_seconds": "Entprellung (Sekunden, 0 = aus)"
+          "co_claim_window": "Co-Claim-Fenster",
+          "debounce_seconds": "Entprellung"
+        },
+        "data_description": {
+          "running_value": "Zustand, während ein Programm läuft. Home Connect: `run`.",
+          "finished_value": "Zustand, wenn ein Programm beendet ist. Home Connect: `finished`. Nur ein Wechsel vom Läuft- auf diesen Wert öffnet einen claimbaren Zyklus.",
+          "persons": "Personen, die einen Claim-Knopf und einen Gutschrift-Sensor bekommen.",
+          "allow_co_claim": "Wenn aktiv, können nach dem ersten Claim weitere Personen innerhalb des Co-Claim-Fensters beitreten; die Gutschrift von 1,0 wird geteilt.",
+          "co_claim_window": "Sekunden nach dem ersten Claim, in denen weitere Personen beitreten können (5-600).",
+          "debounce_seconds": "Einen weiteren Fertig-Zyklus innerhalb so vieler Sekunden nach dem vorigen ignorieren (0 = aus). Hilft bei flatternden Sensoren."
         }
       }
     },
     "error": {
       "no_persons": "Wähle mindestens eine Person.",
-      "no_finished_value": "Gib den Statuswert für \"fertig\" an."
+      "no_finished_value": "Gib den Statuswert für \"fertig\" an.",
+      "no_running_value": "Gib den Statuswert für \"läuft\" an.",
+      "same_values": "Die Werte für \"fertig\" und \"läuft\" müssen sich unterscheiden.",
+      "already_configured": "Dieser Sensor wird bereits von einem anderen Dishwasher-Duty-Eintrag verfolgt."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "claimable": {
+        "name": "Claimbar"
+      }
+    },
+    "button": {
+      "claim": {
+        "name": "{person} claimen"
+      }
+    },
+    "sensor": {
+      "person_credits": {
+        "name": "{person}"
+      },
+      "total_cycles": {
+        "name": "Zyklen gesamt"
+      }
+    }
+  },
+  "exceptions": {
+    "not_configured": {
+      "message": "Dishwasher Duty ist nicht eingerichtet (oder nicht geladen)."
+    },
+    "no_open_cycle": {
+      "message": "{title}: Gerade gibt es keinen offenen Zyklus zum Claimen."
+    },
+    "person_not_authorised": {
+      "message": "{title}: {person} gehört nicht zu den konfigurierten Personen."
+    },
+    "unknown_person": {
+      "message": "{person} ist in keinem Dishwasher-Duty-Eintrag als Person konfiguriert."
+    },
+    "entry_not_found": {
+      "message": "Es gibt keinen Dishwasher-Duty-Eintrag mit der ID {entry_id}."
+    },
+    "entry_not_loaded": {
+      "message": "Der Dishwasher-Duty-Eintrag \"{title}\" ist nicht geladen."
+    },
+    "multiple_entries": {
+      "message": "Es sind mehrere Dishwasher-Duty-Einträge eingerichtet - wähle einen über das Feld config_entry_id."
+    }
+  },
+  "issues": {
+    "source_sensor_missing": {
+      "title": "Dishwasher Duty: Quell-Sensor {entity_id} fehlt",
+      "description": "Der Eintrag \"{title}\" beobachtet `{entity_id}`, diese Entität existiert aber nicht mehr - fertige Zyklen können so nicht erkannt werden. Öffne die Optionen des Eintrags und wähle den neuen Sensor (z. B. nach Umbenennen oder Neu-Hinzufügen des Home-Connect-Geräts). Die Meldung verschwindet, sobald der Sensor wieder existiert."
     }
   },
   "services": {
@@ -46,37 +137,78 @@
       "name": "Claimen",
       "description": "Den aktuell offenen Zyklus für eine Person claimen.",
       "fields": {
-        "person": {"name": "Person", "description": "Person-Entität-ID oder Slug."}
+        "person": {
+          "name": "Person",
+          "description": "Person-Entitäts-ID (person.mia), deren Slug (mia) oder Anzeigename (Mia)."
+        },
+        "config_entry_id": {
+          "name": "Spülmaschine",
+          "description": "Optional - der zu verwendende Dishwasher-Duty-Eintrag. Für die Statistik erforderlich, wenn mehrere Spülmaschinen eingerichtet sind."
+        }
       }
     },
     "claim_multiple": {
       "name": "Claimen (mehrere)",
       "description": "Den offenen Zyklus für mehrere Personen gleichzeitig claimen (Gutschrift wird gleichmäßig geteilt).",
       "fields": {
-        "persons": {"name": "Personen", "description": "Liste von Person-Entitäten-IDs."}
+        "persons": {
+          "name": "Personen",
+          "description": "Liste von Personen (Entitäts-ID, Slug oder Anzeigename)."
+        },
+        "config_entry_id": {
+          "name": "Spülmaschine",
+          "description": "Optional - der zu verwendende Dishwasher-Duty-Eintrag. Für die Statistik erforderlich, wenn mehrere Spülmaschinen eingerichtet sind."
+        }
       }
     },
     "cancel_claim": {
       "name": "Claim zurückziehen",
       "description": "Den Claim einer Person zurückziehen, solange das Claim-Fenster offen ist.",
       "fields": {
-        "person": {"name": "Person", "description": "Person-Entität-ID oder Slug."}
+        "person": {
+          "name": "Person",
+          "description": "Person-Entitäts-ID (person.mia), deren Slug (mia) oder Anzeigename (Mia)."
+        },
+        "config_entry_id": {
+          "name": "Spülmaschine",
+          "description": "Optional - der zu verwendende Dishwasher-Duty-Eintrag. Für die Statistik erforderlich, wenn mehrere Spülmaschinen eingerichtet sind."
+        }
       }
     },
     "get_statistics": {
       "name": "Statistik abrufen",
       "description": "Strukturierte Ausräum-Statistik für einen Zeitraum zurückgeben.",
       "fields": {
-        "start": {"name": "Start", "description": "Beginn des Zeitraums (inklusive)."},
-        "end": {"name": "Ende", "description": "Ende des Zeitraums (inklusive)."},
-        "person": {"name": "Person", "description": "Optional - auf eine Person beschränken."}
+        "start": {
+          "name": "Start",
+          "description": "Beginn des Zeitraums (inklusive). Leer lassen für \"von Anfang an\"."
+        },
+        "end": {
+          "name": "Ende",
+          "description": "Ende des Zeitraums (inklusive). Leer lassen für \"bis jetzt\"."
+        },
+        "person": {
+          "name": "Person",
+          "description": "Optional - die Aufschlüsselung auf eine Person beschränken."
+        },
+        "config_entry_id": {
+          "name": "Spülmaschine",
+          "description": "Optional - der zu verwendende Dishwasher-Duty-Eintrag. Für die Statistik erforderlich, wenn mehrere Spülmaschinen eingerichtet sind."
+        }
       }
     },
     "reset_statistics": {
       "name": "Statistik zurücksetzen",
-      "description": "Gespeicherte Zyklus-Historie zurücksetzen (gesamt oder für eine Person).",
+      "description": "Gespeicherte Zyklus-Historie zurücksetzen (gesamt oder für eine Person). Nicht umkehrbar.",
       "fields": {
-        "person": {"name": "Person", "description": "Optional - nur diese Person zurücksetzen."}
+        "person": {
+          "name": "Person",
+          "description": "Optional - nur Claims und Gutschriften dieser Person zurücksetzen."
+        },
+        "config_entry_id": {
+          "name": "Spülmaschine",
+          "description": "Optional - der zu verwendende Dishwasher-Duty-Eintrag. Für die Statistik erforderlich, wenn mehrere Spülmaschinen eingerichtet sind."
+        }
       }
     }
   }

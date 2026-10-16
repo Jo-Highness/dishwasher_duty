@@ -4,12 +4,21 @@ claim:
   fields:
     person:
       name: Person
-      description: Person entity id (e.g. person.luke) or its slug.
+      description: Person entity ID (person.mia), its slug (mia) or display name (Mia).
       required: true
-      example: person.luke
+      example: person.mia
       selector:
         entity:
           domain: person
+    config_entry_id:
+      name: Dishwasher
+      description: >-
+        Optional - the Dishwasher Duty entry to use. Required for statistics
+        when several dishwashers are set up.
+      required: false
+      selector:
+        config_entry:
+          integration: dishwasher_duty
 
 claim_multiple:
   name: Claim (multiple)
@@ -17,13 +26,22 @@ claim_multiple:
   fields:
     persons:
       name: Persons
-      description: List of person entity ids.
+      description: List of persons (entity ID, slug or display name).
       required: true
-      example: "[person.luke, person.leo]"
+      example: "[person.mia, person.ben]"
       selector:
         entity:
           domain: person
           multiple: true
+    config_entry_id:
+      name: Dishwasher
+      description: >-
+        Optional - the Dishwasher Duty entry to use. Required for statistics
+        when several dishwashers are set up.
+      required: false
+      selector:
+        config_entry:
+          integration: dishwasher_duty
 
 cancel_claim:
   name: Cancel claim
@@ -31,12 +49,21 @@ cancel_claim:
   fields:
     person:
       name: Person
-      description: Person entity id or slug.
+      description: Person entity ID (person.mia), its slug (mia) or display name (Mia).
       required: true
-      example: person.luke
+      example: person.mia
       selector:
         entity:
           domain: person
+    config_entry_id:
+      name: Dishwasher
+      description: >-
+        Optional - the Dishwasher Duty entry to use. Required for statistics
+        when several dishwashers are set up.
+      required: false
+      selector:
+        config_entry:
+          integration: dishwasher_duty
 
 get_statistics:
   name: Get statistics
@@ -61,6 +88,15 @@ get_statistics:
       selector:
         entity:
           domain: person
+    config_entry_id:
+      name: Dishwasher
+      description: >-
+        Optional - the Dishwasher Duty entry to use. Required for statistics
+        when several dishwashers are set up.
+      required: false
+      selector:
+        config_entry:
+          integration: dishwasher_duty
 
 reset_statistics:
   name: Reset statistics
@@ -75,3 +111,12 @@ reset_statistics:
       selector:
         entity:
           domain: person
+    config_entry_id:
+      name: Dishwasher
+      description: >-
+        Optional - the Dishwasher Duty entry to use. Required for statistics
+        when several dishwashers are set up.
+      required: false
+      selector:
+        config_entry:
+          integration: dishwasher_duty

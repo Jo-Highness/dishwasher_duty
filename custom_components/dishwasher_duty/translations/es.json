@@ -3,42 +3,133 @@
     "step": {
       "user": {
         "title": "Dishwasher Duty",
-        "description": "Registra quién vacía el lavavajillas. Elige el sensor de origen (p. ej. el sensor \"Operation state\" de Home Connect) y las personas que pueden reclamar un ciclo.",
+        "description": "Registra quién vacía el lavavajillas. Primero elige el sensor que informa del estado del programa, p. ej. el sensor \"Operation state\" de Home Connect.",
         "data": {
-          "source_sensor": "Sensor de origen",
-          "finished_value": "Valor de estado \"Terminado\"",
+          "source_sensor": "Sensor de origen"
+        },
+        "data_description": {
+          "source_sensor": "Un sensor cuyo estado cambia a un valor \"en marcha\" durante un programa y a un valor \"terminado\" al final."
+        }
+      },
+      "settings": {
+        "title": "Estados, personas y co-reclamación",
+        "description": "Sensor de origen: `{sensor}`. Elige los estados que informa en marcha y al terminar; la lista viene del sensor y se permiten valores propios. No importan mayúsculas/minúsculas.",
+        "data": {
           "running_value": "Valor de estado \"En marcha\"",
+          "finished_value": "Valor de estado \"Terminado\"",
           "persons": "Personas autorizadas",
           "allow_co_claim": "Permitir vaciado compartido (co-reclamación)",
-          "co_claim_window": "Ventana de co-reclamación (segundos)",
-          "debounce_seconds": "Antirrebote (segundos, 0 = desactivado)"
+          "co_claim_window": "Ventana de co-reclamación",
+          "debounce_seconds": "Antirrebote"
+        },
+        "data_description": {
+          "running_value": "Estado mientras se ejecuta un programa. Home Connect: `run`.",
+          "finished_value": "Estado cuando un programa ha terminado. Home Connect: `finished`. Solo un cambio de en marcha a este valor abre un ciclo reclamable.",
+          "persons": "Personas que reciben un botón de reclamación y un sensor de créditos.",
+          "allow_co_claim": "Si está activo, otras personas pueden unirse dentro de la ventana tras la primera reclamación y el crédito de 1,0 se reparte.",
+          "co_claim_window": "Segundos tras la primera reclamación en los que otros pueden unirse (5-600).",
+          "debounce_seconds": "Ignora otro ciclo terminado dentro de estos segundos tras el anterior (0 = desactivado). Útil con sensores inestables."
         }
       }
     },
     "error": {
       "no_persons": "Selecciona al menos una persona.",
-      "no_finished_value": "Introduce el valor de estado que significa \"terminado\"."
+      "no_finished_value": "Introduce el valor de estado que significa \"terminado\".",
+      "no_running_value": "Introduce el valor de estado que significa \"en marcha\".",
+      "same_values": "Los valores \"terminado\" y \"en marcha\" deben ser distintos."
+    },
+    "abort": {
+      "already_configured": "Este sensor ya lo registra Dishwasher Duty."
     }
   },
   "options": {
     "step": {
       "init": {
         "title": "Ajustes de Dishwasher Duty",
-        "description": "Ajusta el sensor de origen, los valores de estado terminado/en marcha, las personas autorizadas y el comportamiento de co-reclamación.",
+        "description": "Cambia el sensor de origen. El siguiente paso muestra el resto de ajustes.",
         "data": {
-          "source_sensor": "Sensor de origen",
-          "finished_value": "Valor de estado \"Terminado\"",
+          "source_sensor": "Sensor de origen"
+        },
+        "data_description": {
+          "source_sensor": "Un sensor cuyo estado cambia a un valor \"en marcha\" durante un programa y a un valor \"terminado\" al final."
+        }
+      },
+      "settings": {
+        "title": "Estados, personas y co-reclamación",
+        "description": "Sensor de origen: `{sensor}`. Elige los estados que informa en marcha y al terminar; la lista viene del sensor y se permiten valores propios. No importan mayúsculas/minúsculas.",
+        "data": {
           "running_value": "Valor de estado \"En marcha\"",
+          "finished_value": "Valor de estado \"Terminado\"",
           "persons": "Personas autorizadas",
           "allow_co_claim": "Permitir vaciado compartido (co-reclamación)",
-          "co_claim_window": "Ventana de co-reclamación (segundos)",
-          "debounce_seconds": "Antirrebote (segundos, 0 = desactivado)"
+          "co_claim_window": "Ventana de co-reclamación",
+          "debounce_seconds": "Antirrebote"
+        },
+        "data_description": {
+          "running_value": "Estado mientras se ejecuta un programa. Home Connect: `run`.",
+          "finished_value": "Estado cuando un programa ha terminado. Home Connect: `finished`. Solo un cambio de en marcha a este valor abre un ciclo reclamable.",
+          "persons": "Personas que reciben un botón de reclamación y un sensor de créditos.",
+          "allow_co_claim": "Si está activo, otras personas pueden unirse dentro de la ventana tras la primera reclamación y el crédito de 1,0 se reparte.",
+          "co_claim_window": "Segundos tras la primera reclamación en los que otros pueden unirse (5-600).",
+          "debounce_seconds": "Ignora otro ciclo terminado dentro de estos segundos tras el anterior (0 = desactivado). Útil con sensores inestables."
         }
       }
     },
     "error": {
       "no_persons": "Selecciona al menos una persona.",
-      "no_finished_value": "Introduce el valor de estado que significa \"terminado\"."
+      "no_finished_value": "Introduce el valor de estado que significa \"terminado\".",
+      "no_running_value": "Introduce el valor de estado que significa \"en marcha\".",
+      "same_values": "Los valores \"terminado\" y \"en marcha\" deben ser distintos.",
+      "already_configured": "Este sensor ya lo registra otra entrada de Dishwasher Duty."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "claimable": {
+        "name": "Reclamable"
+      }
+    },
+    "button": {
+      "claim": {
+        "name": "Reclamar {person}"
+      }
+    },
+    "sensor": {
+      "person_credits": {
+        "name": "{person}"
+      },
+      "total_cycles": {
+        "name": "Ciclos totales"
+      }
+    }
+  },
+  "exceptions": {
+    "not_configured": {
+      "message": "Dishwasher Duty no está configurado (o no está cargado)."
+    },
+    "no_open_cycle": {
+      "message": "{title}: ahora mismo no hay ningún ciclo abierto para reclamar."
+    },
+    "person_not_authorised": {
+      "message": "{title}: {person} no es una de las personas configuradas."
+    },
+    "unknown_person": {
+      "message": "{person} no es una persona configurada en ninguna entrada de Dishwasher Duty."
+    },
+    "entry_not_found": {
+      "message": "No existe ninguna entrada de Dishwasher Duty con el ID {entry_id}."
+    },
+    "entry_not_loaded": {
+      "message": "La entrada de Dishwasher Duty \"{title}\" no está cargada."
+    },
+    "multiple_entries": {
+      "message": "Hay varias entradas de Dishwasher Duty: elige una con el campo config_entry_id."
+    }
+  },
+  "issues": {
+    "source_sensor_missing": {
+      "title": "Dishwasher Duty: falta el sensor de origen {entity_id}",
+      "description": "La entrada \"{title}\" vigila `{entity_id}`, pero esa entidad ya no existe, así que no se pueden detectar ciclos terminados. Abre las opciones de la entrada y selecciona el nuevo sensor (p. ej. tras renombrar o volver a añadir el dispositivo Home Connect). Este aviso desaparece cuando el sensor vuelve a existir."
     }
   },
   "services": {
@@ -46,37 +137,78 @@
       "name": "Reclamar",
       "description": "Reclama el ciclo abierto actual para una persona.",
       "fields": {
-        "person": {"name": "Persona", "description": "ID de entidad person o su slug."}
+        "person": {
+          "name": "Persona",
+          "description": "ID de entidad person (person.mia), su slug (mia) o su nombre visible (Mia)."
+        },
+        "config_entry_id": {
+          "name": "Lavavajillas",
+          "description": "Opcional: la entrada de Dishwasher Duty a usar. Necesaria para las estadísticas si hay varios lavavajillas."
+        }
       }
     },
     "claim_multiple": {
       "name": "Reclamar (varios)",
       "description": "Reclama el ciclo abierto para varias personas a la vez (crédito repartido equitativamente).",
       "fields": {
-        "persons": {"name": "Personas", "description": "Lista de IDs de entidades person."}
+        "persons": {
+          "name": "Personas",
+          "description": "Lista de personas (ID de entidad, slug o nombre visible)."
+        },
+        "config_entry_id": {
+          "name": "Lavavajillas",
+          "description": "Opcional: la entrada de Dishwasher Duty a usar. Necesaria para las estadísticas si hay varios lavavajillas."
+        }
       }
     },
     "cancel_claim": {
       "name": "Cancelar reclamación",
       "description": "Retira la reclamación de una persona mientras la ventana siga abierta.",
       "fields": {
-        "person": {"name": "Persona", "description": "ID de entidad person o su slug."}
+        "person": {
+          "name": "Persona",
+          "description": "ID de entidad person (person.mia), su slug (mia) o su nombre visible (Mia)."
+        },
+        "config_entry_id": {
+          "name": "Lavavajillas",
+          "description": "Opcional: la entrada de Dishwasher Duty a usar. Necesaria para las estadísticas si hay varios lavavajillas."
+        }
       }
     },
     "get_statistics": {
       "name": "Obtener estadísticas",
       "description": "Devuelve estadísticas estructuradas de vaciado para un periodo.",
       "fields": {
-        "start": {"name": "Inicio", "description": "Inicio del periodo (incluido)."},
-        "end": {"name": "Fin", "description": "Fin del periodo (incluido)."},
-        "person": {"name": "Persona", "description": "Opcional: limitar a una persona."}
+        "start": {
+          "name": "Inicio",
+          "description": "Inicio del periodo (incluido). Vacío = \"desde el principio\"."
+        },
+        "end": {
+          "name": "Fin",
+          "description": "Fin del periodo (incluido). Vacío = \"hasta ahora\"."
+        },
+        "person": {
+          "name": "Persona",
+          "description": "Opcional: limitar el desglose a una persona."
+        },
+        "config_entry_id": {
+          "name": "Lavavajillas",
+          "description": "Opcional: la entrada de Dishwasher Duty a usar. Necesaria para las estadísticas si hay varios lavavajillas."
+        }
       }
     },
     "reset_statistics": {
       "name": "Restablecer estadísticas",
-      "description": "Restablece el historial de ciclos (todo o de una persona).",
+      "description": "Restablece el historial de ciclos (todo o de una persona). No se puede deshacer.",
       "fields": {
-        "person": {"name": "Persona", "description": "Opcional: restablecer solo esta persona."}
+        "person": {
+          "name": "Persona",
+          "description": "Opcional: restablecer solo las reclamaciones y créditos de esta persona."
+        },
+        "config_entry_id": {
+          "name": "Lavavajillas",
+          "description": "Opcional: la entrada de Dishwasher Duty a usar. Necesaria para las estadísticas si hay varios lavavajillas."
+        }
       }
     }
   }
