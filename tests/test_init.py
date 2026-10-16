@@ -74,7 +74,10 @@ async def test_setup_creates_entities_and_services(hass):
         == f"{entry.entry_id}_claim_alice"
     )
 
-    device = dr.async_get(hass).async_get_device(identifiers={(DOMAIN, entry.entry_id)})
+    devices = dr.async_entries_for_config_entry(dr.async_get(hass), entry.entry_id)
+    assert len(devices) == 1
+    device = devices[0]
+    assert device.identifiers == {(DOMAIN, entry.entry_id)}
     assert device.entry_type is dr.DeviceEntryType.SERVICE
     assert device.name == "Dishwasher Duty"
 
