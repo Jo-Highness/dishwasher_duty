@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable, Coroutine
+from collections.abc import AsyncGenerator, Callable, Coroutine
 from typing import Any
 
 import pytest
@@ -72,17 +72,23 @@ async def setup_integration(
 
 
 @pytest.fixture
-def make_coordinator(
+async def make_coordinator(
     hass,
-) -> Callable[..., Coroutine[Any, Any, DishwasherDutyCoordinator]]:
+) -> AsyncGenerator[Callable[..., Coroutine[Any, Any, DishwasherDutyCoordinator]]]:
+    created: list[DishwasherDutyCoordinator] = []
+
     async def _factory(**overrides: Any) -> DishwasherDutyCoordinator:
         entry = MockConfigEntry(domain=DOMAIN, data=build_data(**overrides))
         entry.add_to_hass(hass)
         coordinator = DishwasherDutyCoordinator(hass, entry)
         await coordinator._async_restore()
+        created.append(coordinator)
         return coordinator
 
-    return _factory
+    yield _factory
+    # Cancel claim-window timers and listeners the test left running.
+    for coordinator in created:
+        await coordinator.async_shutdown()
 
 
 async def feed(coordinator: DishwasherDutyCoordinator, *states: str) -> None:
