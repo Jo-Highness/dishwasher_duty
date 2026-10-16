@@ -4,7 +4,7 @@ Dishwasher Duty remembers **who unloads the dishwasher** and keeps statistics.
 
 ## 1. How it works
 It watches a sensor of your dishwasher (e.g. Home Connect "Operation state"). When it goes
-**Running → Finished**, a claimable cycle opens. Whoever unloads presses their button (or calls a
+**running → finished** (e.g. `run` → `finished`), a claimable cycle opens. Whoever unloads presses their button (or calls a
 service) and gets a credit of **1.0**. If several people share the work, the 1.0 is split fairly.
 
 ## 2. Installation
@@ -14,9 +14,9 @@ service) and gets a credit of **1.0**. If several people share the work, the 1.0
 
 ## 3. Setup
 - **Source sensor:** your machine's operation-state sensor.
-- **"Finished"/"Running" value:** the state text for finished/running. **Important:** check under
-  *Developer Tools → States* what your sensor actually reports (e.g. `Finished`/`Run` or lowercase
-  `finished`/`run`) and enter it.
+- **"Running"/"Finished" value** (second step): pick them from the list of states your sensor
+  offers, or type your own. Home Connect reports `run` and `finished` (the defaults). Upper/lower
+  case does not matter. If unsure, check *Developer Tools → States* during and after a programme.
 - **Eligible persons:** the `person` entities who unload.
 - **Shared unloading** (default on) + **co-claim window** (default 90 s): the time after the first
   press during which others can join the same cycle.
@@ -43,6 +43,9 @@ Returns total cycles, unclaimed cycles, per-person (participations + credits) an
 chronological list.
 
 ## 7. Notes
-- `unavailable`/`unknown` (e.g. device reboot) never count as running/finished.
+- `unavailable`/`unknown` (e.g. device reboot) are ignored: *run → unavailable → finished* still
+  counts as one cycle, *unavailable → finished* without a run does not.
+- `dishwasher_duty.cancel_claim` reports an error if no cycle is open.
+- Several dishwashers? Add the integration once per source sensor; each gets its own entities.
 - Pressing repeatedly is harmless (one contribution per person/cycle).
 - `dishwasher_duty.reset_statistics` clears history (all or per person) — use with care.

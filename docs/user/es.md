@@ -15,9 +15,9 @@ un servicio) y obtiene un crédito de **1,0**. Si varios colaboran, el 1,0 se re
 
 ## 3. Configuración
 - **Sensor de origen:** el sensor de estado de tu máquina.
-- **Valor "Terminado"/"En marcha":** el texto de estado. **Importante:** comprueba en
-  *Herramientas para desarrolladores → Estados* qué valor reporta realmente tu sensor (p. ej.
-  `Finished`/`Run` o en minúsculas) e introdúcelo.
+- **Valor "En marcha"/"Terminado"** (segundo paso): elígelos de la lista de estados que ofrece
+  tu sensor o escribe uno propio. Home Connect usa `run` y `finished` (valores por defecto). No
+  importan mayúsculas/minúsculas. Si dudas, mira *Herramientas para desarrolladores → Estados*.
 - **Personas autorizadas:** las entidades `person` que vacían.
 - **Vaciado compartido** (por defecto activado) + **ventana de co-reclamación** (90 s).
 
@@ -43,6 +43,8 @@ Devuelve ciclos totales, ciclos no reclamados, por persona (participaciones + cr
 lista cronológica.
 
 ## 7. Notas
-- `unavailable`/`unknown` nunca cuentan como en marcha/terminado.
+- `unavailable`/`unknown` se ignoran: *run → unavailable → finished* cuenta como un ciclo;
+  *unavailable → finished* sin marcha previa, no.
+- `dishwasher_duty.cancel_claim` devuelve un error si no hay ningún ciclo abierto.
 - Pulsar varias veces es inofensivo (una contribución por persona/ciclo).
 - `dishwasher_duty.reset_statistics` borra el historial (todo o por persona) — úsalo con cuidado.

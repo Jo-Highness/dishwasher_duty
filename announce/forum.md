@@ -4,7 +4,7 @@ Sharing a small custom integration I built to settle a recurring household quest
 
 **Dishwasher Duty** watches a dishwasher **state sensor** for a configured "finished" value. When a cycle finishes, a claim opens, and a household member claims the credit — either with their per-person button or the `dishwasher_duty.claim` service. It keeps per-person credit statistics and a running count of completed cycles. Everything runs locally; there is no cloud component.
 
-![Screenshot: Dishwasher Duty entities in the dashboard](images/overview.png)
+![Screenshot: Dishwasher Duty entities in the dashboard](images/dashboard.png)
 <!-- INSERT: a dashboard screenshot showing the Claimable binary sensor, Total Cycles sensor, and the per-person credit sensors + claim buttons. ~1200px wide. -->
 
 ## What it does
@@ -56,8 +56,8 @@ Via **HACS**. For now add it as a **custom repository** (`Jo-Highness/dishwasher
 
 ## Details
 
-- Version **1.0.1**
-- Minimum Home Assistant: **2024.11**
+- Version **1.1.0**
+- Minimum Home Assistant: **2025.2**
 - Licence: **MIT**
 - UI translated into **7 languages**: DE, EN, ES, FR, EL, JA, NB
 

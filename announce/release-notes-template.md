@@ -2,7 +2,7 @@
 
 <!--
 Reusable release-notes template.
-- Replace vNEW with the new tag (e.g. v1.0.2) and vPREV with the previous tag (e.g. v1.0.1).
+- Replace vNEW with the new tag (e.g. v1.1.0) and vPREV with the previous tag (e.g. v1.0.3).
 - Delete any section that has no entries for this release.
 - Keep entries short, factual, user-facing. No superlatives.
 -->
