@@ -3,42 +3,133 @@
     "step": {
       "user": {
         "title": "Dishwasher Duty",
-        "description": "Track who unloads the dishwasher. Pick the source sensor (e.g. the Home Connect \"Operation state\" sensor) and the people who may claim a cycle.",
+        "description": "Track who unloads the dishwasher. First pick the sensor that reports your dishwasher's programme state, e.g. the Home Connect \"Operation state\" sensor.",
         "data": {
-          "source_sensor": "Source sensor",
-          "finished_value": "\"Finished\" state value",
+          "source_sensor": "Source sensor"
+        },
+        "data_description": {
+          "source_sensor": "A sensor whose state changes to a \"running\" value during a programme and to a \"finished\" value at the end."
+        }
+      },
+      "settings": {
+        "title": "States, persons and co-claiming",
+        "description": "Source sensor: `{sensor}`. Pick the states it reports while running and when finished - the list comes from the sensor, custom values are allowed. Upper/lower case does not matter.",
+        "data": {
           "running_value": "\"Running\" state value",
+          "finished_value": "\"Finished\" state value",
           "persons": "Eligible persons",
           "allow_co_claim": "Allow shared unloading (co-claim)",
-          "co_claim_window": "Co-claim window (seconds)",
-          "debounce_seconds": "Debounce (seconds, 0 = off)"
+          "co_claim_window": "Co-claim window",
+          "debounce_seconds": "Debounce"
+        },
+        "data_description": {
+          "running_value": "State while a programme runs. Home Connect: `run`.",
+          "finished_value": "State when a programme has ended. Home Connect: `finished`. Only a change from the running to this value opens a claimable cycle.",
+          "persons": "People who get a claim button and a credit sensor.",
+          "allow_co_claim": "If on, others can join within the co-claim window after the first claim and the credit of 1.0 is shared.",
+          "co_claim_window": "Seconds after the first claim during which others can join (5-600).",
+          "debounce_seconds": "Ignore another finished cycle within this many seconds of the previous one (0 = off). Helps with flapping sensors."
         }
       }
     },
     "error": {
       "no_persons": "Select at least one person.",
-      "no_finished_value": "Enter the state value that means \"finished\"."
+      "no_finished_value": "Enter the state value that means \"finished\".",
+      "no_running_value": "Enter the state value that means \"running\".",
+      "same_values": "The \"finished\" and \"running\" values must be different."
+    },
+    "abort": {
+      "already_configured": "This sensor is already tracked by Dishwasher Duty."
     }
   },
   "options": {
     "step": {
       "init": {
         "title": "Dishwasher Duty settings",
-        "description": "Adjust the source sensor, the finished/running state values, the eligible persons and the co-claim behaviour.",
+        "description": "Change the source sensor. The next step shows all other settings.",
         "data": {
-          "source_sensor": "Source sensor",
-          "finished_value": "\"Finished\" state value",
+          "source_sensor": "Source sensor"
+        },
+        "data_description": {
+          "source_sensor": "A sensor whose state changes to a \"running\" value during a programme and to a \"finished\" value at the end."
+        }
+      },
+      "settings": {
+        "title": "States, persons and co-claiming",
+        "description": "Source sensor: `{sensor}`. Pick the states it reports while running and when finished - the list comes from the sensor, custom values are allowed. Upper/lower case does not matter.",
+        "data": {
           "running_value": "\"Running\" state value",
+          "finished_value": "\"Finished\" state value",
           "persons": "Eligible persons",
           "allow_co_claim": "Allow shared unloading (co-claim)",
-          "co_claim_window": "Co-claim window (seconds)",
-          "debounce_seconds": "Debounce (seconds, 0 = off)"
+          "co_claim_window": "Co-claim window",
+          "debounce_seconds": "Debounce"
+        },
+        "data_description": {
+          "running_value": "State while a programme runs. Home Connect: `run`.",
+          "finished_value": "State when a programme has ended. Home Connect: `finished`. Only a change from the running to this value opens a claimable cycle.",
+          "persons": "People who get a claim button and a credit sensor.",
+          "allow_co_claim": "If on, others can join within the co-claim window after the first claim and the credit of 1.0 is shared.",
+          "co_claim_window": "Seconds after the first claim during which others can join (5-600).",
+          "debounce_seconds": "Ignore another finished cycle within this many seconds of the previous one (0 = off). Helps with flapping sensors."
         }
       }
     },
     "error": {
       "no_persons": "Select at least one person.",
-      "no_finished_value": "Enter the state value that means \"finished\"."
+      "no_finished_value": "Enter the state value that means \"finished\".",
+      "no_running_value": "Enter the state value that means \"running\".",
+      "same_values": "The \"finished\" and \"running\" values must be different.",
+      "already_configured": "This sensor is already tracked by another Dishwasher Duty entry."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "claimable": {
+        "name": "Claimable"
+      }
+    },
+    "button": {
+      "claim": {
+        "name": "Claim {person}"
+      }
+    },
+    "sensor": {
+      "person_credits": {
+        "name": "{person}"
+      },
+      "total_cycles": {
+        "name": "Total cycles"
+      }
+    }
+  },
+  "exceptions": {
+    "not_configured": {
+      "message": "Dishwasher Duty is not set up (or not loaded)."
+    },
+    "no_open_cycle": {
+      "message": "{title}: there is no open cycle to claim right now."
+    },
+    "person_not_authorised": {
+      "message": "{title}: {person} is not one of the configured persons."
+    },
+    "unknown_person": {
+      "message": "{person} is not a configured person of any Dishwasher Duty entry."
+    },
+    "entry_not_found": {
+      "message": "No Dishwasher Duty entry with ID {entry_id} exists."
+    },
+    "entry_not_loaded": {
+      "message": "The Dishwasher Duty entry \"{title}\" is not loaded."
+    },
+    "multiple_entries": {
+      "message": "Several Dishwasher Duty entries are set up - choose one with the config_entry_id field."
+    }
+  },
+  "issues": {
+    "source_sensor_missing": {
+      "title": "Dishwasher Duty: source sensor {entity_id} is missing",
+      "description": "The entry \"{title}\" watches `{entity_id}`, but that entity no longer exists, so finished cycles cannot be detected. Open the entry's options and select the new sensor (e.g. after renaming or re-adding the Home Connect device). This message disappears once the sensor exists again."
     }
   },
   "services": {
@@ -46,37 +137,78 @@
       "name": "Claim",
       "description": "Claim the currently open cycle for one person.",
       "fields": {
-        "person": {"name": "Person", "description": "Person entity id or slug."}
+        "person": {
+          "name": "Person",
+          "description": "Person entity ID (person.mia), its slug (mia) or display name (Mia)."
+        },
+        "config_entry_id": {
+          "name": "Dishwasher",
+          "description": "Optional - the Dishwasher Duty entry to use. Required for statistics when several dishwashers are set up."
+        }
       }
     },
     "claim_multiple": {
       "name": "Claim (multiple)",
       "description": "Claim the open cycle for several people at once (credit shared equally).",
       "fields": {
-        "persons": {"name": "Persons", "description": "List of person entity ids."}
+        "persons": {
+          "name": "Persons",
+          "description": "List of persons (entity ID, slug or display name)."
+        },
+        "config_entry_id": {
+          "name": "Dishwasher",
+          "description": "Optional - the Dishwasher Duty entry to use. Required for statistics when several dishwashers are set up."
+        }
       }
     },
     "cancel_claim": {
       "name": "Cancel claim",
       "description": "Withdraw a person's claim while the claim window is still open.",
       "fields": {
-        "person": {"name": "Person", "description": "Person entity id or slug."}
+        "person": {
+          "name": "Person",
+          "description": "Person entity ID (person.mia), its slug (mia) or display name (Mia)."
+        },
+        "config_entry_id": {
+          "name": "Dishwasher",
+          "description": "Optional - the Dishwasher Duty entry to use. Required for statistics when several dishwashers are set up."
+        }
       }
     },
     "get_statistics": {
       "name": "Get statistics",
       "description": "Return structured unload statistics for a time range.",
       "fields": {
-        "start": {"name": "Start", "description": "Start of the range (inclusive)."},
-        "end": {"name": "End", "description": "End of the range (inclusive)."},
-        "person": {"name": "Person", "description": "Optional - limit to one person."}
+        "start": {
+          "name": "Start",
+          "description": "Start of the range (inclusive). Omit for \"from the beginning\"."
+        },
+        "end": {
+          "name": "End",
+          "description": "End of the range (inclusive). Omit for \"until now\"."
+        },
+        "person": {
+          "name": "Person",
+          "description": "Optional - limit the per-person breakdown to one person."
+        },
+        "config_entry_id": {
+          "name": "Dishwasher",
+          "description": "Optional - the Dishwasher Duty entry to use. Required for statistics when several dishwashers are set up."
+        }
       }
     },
     "reset_statistics": {
       "name": "Reset statistics",
-      "description": "Reset stored cycle history (all, or for one person).",
+      "description": "Reset stored cycle history (all, or for one person). Cannot be undone.",
       "fields": {
-        "person": {"name": "Person", "description": "Optional - reset only this person."}
+        "person": {
+          "name": "Person",
+          "description": "Optional - reset only this person's claims and credits."
+        },
+        "config_entry_id": {
+          "name": "Dishwasher",
+          "description": "Optional - the Dishwasher Duty entry to use. Required for statistics when several dishwashers are set up."
+        }
       }
     }
   }

@@ -3,42 +3,133 @@
     "step": {
       "user": {
         "title": "Dishwasher Duty",
-        "description": "Suit qui vide le lave-vaisselle. Choisissez le capteur source (par ex. le capteur \"Operation state\" de Home Connect) et les personnes autorisées à revendiquer un cycle.",
+        "description": "Suit qui vide le lave-vaisselle. Choisissez d'abord le capteur qui indique l'état du programme, par ex. le capteur \"Operation state\" de Home Connect.",
         "data": {
-          "source_sensor": "Capteur source",
-          "finished_value": "Valeur d'état \"Terminé\"",
+          "source_sensor": "Capteur source"
+        },
+        "data_description": {
+          "source_sensor": "Un capteur dont l'état passe à une valeur \"en marche\" pendant un programme et à une valeur \"terminé\" à la fin."
+        }
+      },
+      "settings": {
+        "title": "États, personnes et co-revendication",
+        "description": "Capteur source : `{sensor}`. Choisissez les états qu'il indique en marche et à la fin ; la liste provient du capteur, des valeurs personnalisées sont possibles. La casse n'a pas d'importance.",
+        "data": {
           "running_value": "Valeur d'état \"En marche\"",
+          "finished_value": "Valeur d'état \"Terminé\"",
           "persons": "Personnes autorisées",
           "allow_co_claim": "Autoriser le vidage partagé (co-revendication)",
-          "co_claim_window": "Fenêtre de co-revendication (secondes)",
-          "debounce_seconds": "Anti-rebond (secondes, 0 = désactivé)"
+          "co_claim_window": "Fenêtre de co-revendication",
+          "debounce_seconds": "Anti-rebond"
+        },
+        "data_description": {
+          "running_value": "État pendant l'exécution d'un programme. Home Connect : `run`.",
+          "finished_value": "État lorsqu'un programme est terminé. Home Connect : `finished`. Seul un passage de l'état en marche à cette valeur ouvre un cycle revendicable.",
+          "persons": "Personnes qui reçoivent un bouton de revendication et un capteur de crédits.",
+          "allow_co_claim": "Si activé, d'autres personnes peuvent se joindre dans la fenêtre après la première revendication et le crédit de 1,0 est partagé.",
+          "co_claim_window": "Secondes après la première revendication pendant lesquelles d'autres peuvent se joindre (5-600).",
+          "debounce_seconds": "Ignorer un autre cycle terminé dans ce délai (en secondes) après le précédent (0 = désactivé). Utile pour les capteurs instables."
         }
       }
     },
     "error": {
       "no_persons": "Sélectionnez au moins une personne.",
-      "no_finished_value": "Saisissez la valeur d'état signifiant \"terminé\"."
+      "no_finished_value": "Saisissez la valeur d'état signifiant \"terminé\".",
+      "no_running_value": "Saisissez la valeur d'état signifiant \"en marche\".",
+      "same_values": "Les valeurs \"terminé\" et \"en marche\" doivent être différentes."
+    },
+    "abort": {
+      "already_configured": "Ce capteur est déjà suivi par Dishwasher Duty."
     }
   },
   "options": {
     "step": {
       "init": {
         "title": "Paramètres de Dishwasher Duty",
-        "description": "Ajustez le capteur source, les valeurs d'état terminé/en marche, les personnes autorisées et le comportement de co-revendication.",
+        "description": "Modifier le capteur source. L'étape suivante affiche tous les autres paramètres.",
         "data": {
-          "source_sensor": "Capteur source",
-          "finished_value": "Valeur d'état \"Terminé\"",
+          "source_sensor": "Capteur source"
+        },
+        "data_description": {
+          "source_sensor": "Un capteur dont l'état passe à une valeur \"en marche\" pendant un programme et à une valeur \"terminé\" à la fin."
+        }
+      },
+      "settings": {
+        "title": "États, personnes et co-revendication",
+        "description": "Capteur source : `{sensor}`. Choisissez les états qu'il indique en marche et à la fin ; la liste provient du capteur, des valeurs personnalisées sont possibles. La casse n'a pas d'importance.",
+        "data": {
           "running_value": "Valeur d'état \"En marche\"",
+          "finished_value": "Valeur d'état \"Terminé\"",
           "persons": "Personnes autorisées",
           "allow_co_claim": "Autoriser le vidage partagé (co-revendication)",
-          "co_claim_window": "Fenêtre de co-revendication (secondes)",
-          "debounce_seconds": "Anti-rebond (secondes, 0 = désactivé)"
+          "co_claim_window": "Fenêtre de co-revendication",
+          "debounce_seconds": "Anti-rebond"
+        },
+        "data_description": {
+          "running_value": "État pendant l'exécution d'un programme. Home Connect : `run`.",
+          "finished_value": "État lorsqu'un programme est terminé. Home Connect : `finished`. Seul un passage de l'état en marche à cette valeur ouvre un cycle revendicable.",
+          "persons": "Personnes qui reçoivent un bouton de revendication et un capteur de crédits.",
+          "allow_co_claim": "Si activé, d'autres personnes peuvent se joindre dans la fenêtre après la première revendication et le crédit de 1,0 est partagé.",
+          "co_claim_window": "Secondes après la première revendication pendant lesquelles d'autres peuvent se joindre (5-600).",
+          "debounce_seconds": "Ignorer un autre cycle terminé dans ce délai (en secondes) après le précédent (0 = désactivé). Utile pour les capteurs instables."
         }
       }
     },
     "error": {
       "no_persons": "Sélectionnez au moins une personne.",
-      "no_finished_value": "Saisissez la valeur d'état signifiant \"terminé\"."
+      "no_finished_value": "Saisissez la valeur d'état signifiant \"terminé\".",
+      "no_running_value": "Saisissez la valeur d'état signifiant \"en marche\".",
+      "same_values": "Les valeurs \"terminé\" et \"en marche\" doivent être différentes.",
+      "already_configured": "Ce capteur est déjà suivi par une autre entrée Dishwasher Duty."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "claimable": {
+        "name": "Revendicable"
+      }
+    },
+    "button": {
+      "claim": {
+        "name": "Revendiquer {person}"
+      }
+    },
+    "sensor": {
+      "person_credits": {
+        "name": "{person}"
+      },
+      "total_cycles": {
+        "name": "Cycles au total"
+      }
+    }
+  },
+  "exceptions": {
+    "not_configured": {
+      "message": "Dishwasher Duty n'est pas configuré (ou pas chargé)."
+    },
+    "no_open_cycle": {
+      "message": "{title} : aucun cycle ouvert à revendiquer pour le moment."
+    },
+    "person_not_authorised": {
+      "message": "{title} : {person} ne fait pas partie des personnes configurées."
+    },
+    "unknown_person": {
+      "message": "{person} n'est configuré(e) dans aucune entrée Dishwasher Duty."
+    },
+    "entry_not_found": {
+      "message": "Aucune entrée Dishwasher Duty avec l'ID {entry_id}."
+    },
+    "entry_not_loaded": {
+      "message": "L'entrée Dishwasher Duty \"{title}\" n'est pas chargée."
+    },
+    "multiple_entries": {
+      "message": "Plusieurs entrées Dishwasher Duty sont configurées : choisissez-en une avec le champ config_entry_id."
+    }
+  },
+  "issues": {
+    "source_sensor_missing": {
+      "title": "Dishwasher Duty : le capteur source {entity_id} est introuvable",
+      "description": "L'entrée \"{title}\" surveille `{entity_id}`, mais cette entité n'existe plus ; les cycles terminés ne peuvent donc pas être détectés. Ouvrez les options de l'entrée et sélectionnez le nouveau capteur (par ex. après avoir renommé ou rajouté l'appareil Home Connect). Ce message disparaît dès que le capteur existe à nouveau."
     }
   },
   "services": {
@@ -46,37 +137,78 @@
       "name": "Revendiquer",
       "description": "Revendique le cycle ouvert actuel pour une personne.",
       "fields": {
-        "person": {"name": "Personne", "description": "ID d'entité person ou son slug."}
+        "person": {
+          "name": "Personne",
+          "description": "ID d'entité person (person.mia), son slug (mia) ou son nom affiché (Mia)."
+        },
+        "config_entry_id": {
+          "name": "Lave-vaisselle",
+          "description": "Optionnel - l'entrée Dishwasher Duty à utiliser. Requis pour les statistiques si plusieurs lave-vaisselle sont configurés."
+        }
       }
     },
     "claim_multiple": {
       "name": "Revendiquer (plusieurs)",
       "description": "Revendique le cycle ouvert pour plusieurs personnes (crédit partagé équitablement).",
       "fields": {
-        "persons": {"name": "Personnes", "description": "Liste d'ID d'entités person."}
+        "persons": {
+          "name": "Personnes",
+          "description": "Liste de personnes (ID d'entité, slug ou nom affiché)."
+        },
+        "config_entry_id": {
+          "name": "Lave-vaisselle",
+          "description": "Optionnel - l'entrée Dishwasher Duty à utiliser. Requis pour les statistiques si plusieurs lave-vaisselle sont configurés."
+        }
       }
     },
     "cancel_claim": {
       "name": "Annuler la revendication",
       "description": "Retire la revendication d'une personne tant que la fenêtre est ouverte.",
       "fields": {
-        "person": {"name": "Personne", "description": "ID d'entité person ou son slug."}
+        "person": {
+          "name": "Personne",
+          "description": "ID d'entité person (person.mia), son slug (mia) ou son nom affiché (Mia)."
+        },
+        "config_entry_id": {
+          "name": "Lave-vaisselle",
+          "description": "Optionnel - l'entrée Dishwasher Duty à utiliser. Requis pour les statistiques si plusieurs lave-vaisselle sont configurés."
+        }
       }
     },
     "get_statistics": {
       "name": "Obtenir les statistiques",
       "description": "Renvoie des statistiques de vidage structurées pour une période.",
       "fields": {
-        "start": {"name": "Début", "description": "Début de la période (inclus)."},
-        "end": {"name": "Fin", "description": "Fin de la période (inclus)."},
-        "person": {"name": "Personne", "description": "Optionnel - limiter à une personne."}
+        "start": {
+          "name": "Début",
+          "description": "Début de la période (inclus). Vide = \"depuis le début\"."
+        },
+        "end": {
+          "name": "Fin",
+          "description": "Fin de la période (inclus). Vide = \"jusqu'à maintenant\"."
+        },
+        "person": {
+          "name": "Personne",
+          "description": "Optionnel - limiter le détail à une personne."
+        },
+        "config_entry_id": {
+          "name": "Lave-vaisselle",
+          "description": "Optionnel - l'entrée Dishwasher Duty à utiliser. Requis pour les statistiques si plusieurs lave-vaisselle sont configurés."
+        }
       }
     },
     "reset_statistics": {
       "name": "Réinitialiser les statistiques",
-      "description": "Réinitialise l'historique des cycles (tout ou pour une personne).",
+      "description": "Réinitialise l'historique des cycles (tout ou pour une personne). Irréversible.",
       "fields": {
-        "person": {"name": "Personne", "description": "Optionnel - réinitialiser uniquement cette personne."}
+        "person": {
+          "name": "Personne",
+          "description": "Optionnel - réinitialiser uniquement les revendications et crédits de cette personne."
+        },
+        "config_entry_id": {
+          "name": "Lave-vaisselle",
+          "description": "Optionnel - l'entrée Dishwasher Duty à utiliser. Requis pour les statistiques si plusieurs lave-vaisselle sont configurés."
+        }
       }
     }
   }

@@ -6,105 +6,150 @@
 
 # Dishwasher Duty
 
-**Track who unloads the dishwasher — award fair (optionally shared) credit and keep detailed per-person statistics.**
+**A Home Assistant integration that records who unloaded the dishwasher after each finished
+programme, splits the credit fairly when several people helped, and keeps per-person statistics.**
 
 [![HACS Custom](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
 [![Validate](https://github.com/Jo-Highness/dishwasher_duty/actions/workflows/validate.yml/badge.svg)](https://github.com/Jo-Highness/dishwasher_duty/actions/workflows/validate.yml)
 [![Tests](https://github.com/Jo-Highness/dishwasher_duty/actions/workflows/test.yml/badge.svg)](https://github.com/Jo-Highness/dishwasher_duty/actions/workflows/test.yml)
 [![Release](https://img.shields.io/github/v/release/Jo-Highness/dishwasher_duty)](https://github.com/Jo-Highness/dishwasher_duty/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2024.11%2B-41BDF5.svg)](https://www.home-assistant.io/)
+[![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2025.2%2B-41BDF5.svg)](https://www.home-assistant.io/)
 
----
+## Quick start
 
-## Why this exists
+You need a sensor that reports your dishwasher's programme state — for example the
+*Operation state* sensor of the [Home Connect](https://www.home-assistant.io/integrations/home_connect/)
+integration — and at least one `person` in Home Assistant.
 
-Nobody remembers whose turn it was to empty the dishwasher — and "I did it last time" is impossible
-to prove. **Dishwasher Duty** settles the argument with data. It watches a **source sensor** (for
-example the *Operation state* sensor of the **Home Connect** integration) for the moment the machine
-finishes a cycle. That opens a **claimable cycle**: whoever unloaded it taps their button (or calls a
-service) and earns the credit. If two or three people empty it together, the **1.0 credit per cycle**
-is split fairly among them. Over time you get per-person statistics (total, today, week, month, year)
-and a running total-cycles counter — perfect for a family chore leaderboard.
+1. **Install via HACS:**
+   [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Jo-Highness&repository=dishwasher_duty&category=integration)
+   — download *Dishwasher Duty* and restart Home Assistant.
+2. **Add the integration:** *Settings → Devices & services → Add integration → "Dishwasher Duty"*.
+   Pick the source sensor, then the "running" and "finished" values (offered from the sensor —
+   for Home Connect `run` and `finished`) and the people who unload.
+3. **Try it without waiting for a programme:** open *Developer tools → States*, select your
+   source sensor, set its state to `run` (*Set state*), then to `finished`.
+   `binary_sensor.dishwasher_duty_claimable` turns **on**.
+4. **Claim it:** press `button.dishwasher_duty_claim_<person>` (e.g. on a dashboard). The person's
+   sensor `sensor.dishwasher_duty_<person>` now shows **1.0 credits**.
+5. Optional: remove the test cycle again with the action `dishwasher_duty.reset_statistics`
+   (without a person it clears **all** history — fine right after installation).
 
-## Features
-
-- **Robust cycle detection:** only a genuine `Running → Finished` transition counts (prevents
-  double-counting on `unavailable → Finished`, glitches, restarts).
-- **Co-claiming:** a configurable time window (default 90 s) during which additional people can join
-  the same cycle; the credit is shared fairly (1 person = 1.0; 2 = 0.5 each; 3 = 0.34/0.33/0.33 →
-  always sums to 1.0).
-- **Persistence:** the full cycle history survives restarts (including an open claim window with its
-  remaining time).
-- **Statistics:** accumulated credits per person plus today/week/month/year; Recorder /
-  long-term-statistics compatible for history charts.
-- **Services & buttons** for convenient claiming, correcting and reporting.
-- Translated into **German, English, Spanish, French, Greek, Japanese, Norwegian Bokmål**.
+> States set in *Developer tools* are only temporary; the real sensor overwrites them with its
+> next update.
 
 ## Screenshots
 
-> Captured from a demo Home Assistant with fictional data.
+> Captured from a demo Home Assistant with fictional data (version 1.0.x — the setup form is
+> now split into two steps, see [Configuration](#configuration)).
 
-| Setup (config flow) | Entities card in use |
+| Entities card | Integration page |
 |:---:|:---:|
-| ![The UI setup form](images/config-flow.png) | ![Claimable, total cycles and per-person credits](images/dashboard.png) |
+| ![Claimable, total cycles, per-person credits and a claim button](images/dashboard.png) | ![The integration with one service device](images/entities.png) |
+
+| Setup form (1.0.x) |
+|:---:|
+| ![The UI setup form](images/config-flow.png) |
+
+## How it works
+
+The integration watches the **source sensor**. When its state changes from the *running* value to
+the *finished* value, a **claimable cycle** opens. Whoever unloads the machine presses their
+button (or calls an action) and receives the credit for that cycle: **1.0 per cycle**. If shared
+unloading (co-claim) is on, other people can join within a time window after the first claim and
+the 1.0 is split among them.
+
+- **Cycle detection:** only a change *running → finished* counts. `finished → finished` or
+  `unavailable → finished` (without a preceding run) does not.
+- **`unavailable`/`unknown` are ignored:** if the sensor drops out during a programme
+  (*run → unavailable → finished*), the cycle still counts — also across a Home Assistant restart.
+- **Case does not matter:** `Run`, `run` and `RUN` are the same value.
+- **Persistence:** the cycle history and an open claim window (with its remaining time) survive
+  restarts.
+- **Statistics:** credits per person in total and for today/week/month/year; the sensors have
+  `state_class: total_increasing`, so they work with history graphs and long-term statistics.
+- **Several dishwashers:** each dishwasher is its own entry with its own entities.
+- UI translated into German, English, Spanish, French, Greek, Japanese and Norwegian Bokmål.
 
 ## Installation
 
 ### HACS (recommended)
 
-[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Jo-Highness&repository=dishwasher_duty&category=integration)
-
-1. Click the button above, or in HACS go to ⋮ → *Custom repositories* and add this repository with
-   category **Integration**.
+1. Click the HACS button in the [Quick start](#quick-start), or in HACS go to ⋮ →
+   *Custom repositories* and add `https://github.com/Jo-Highness/dishwasher_duty` with type
+   **Integration**.
 2. Download *Dishwasher Duty* and restart Home Assistant.
-3. Go to *Settings → Devices & Services → Add Integration → "Dishwasher Duty"*.
 
 ### Manual
 
-Copy the folder `custom_components/dishwasher_duty/` into `<config>/custom_components/` and restart
-Home Assistant. Then add the integration from *Settings → Devices & Services*.
+Copy `custom_components/dishwasher_duty/` into `<config>/custom_components/` and restart Home
+Assistant.
 
 ## Configuration
 
-All settings are chosen in the config flow and can be changed later via the integration's **Options**.
+Setup has two steps; both can be changed later via the entry's **Configure** button.
+
+**Step 1 — source sensor**
 
 | Field | Meaning |
 |---|---|
-| **Source sensor** (`source_sensor`) | A `sensor` entity, e.g. `sensor.dishwasher_operation_state` (Home Connect) |
-| **Finished value** (`finished_value`) | State value meaning "finished" (default `Finished` — **check your sensor!**) |
-| **Running value** (`running_value`) | State value meaning "running" (default `Run`) |
-| **Persons** (`persons`) | Multi-select of one or more `person` entities |
-| **Co-claiming** (`allow_co_claim`) | On/off (default on) |
-| **Co-claim window** (`co_claim_window`) | Seconds, 5–600 (default 90) |
-| **Debounce** (`debounce_seconds`) | Seconds, 0–120 (default 0 = off) |
+| **Source sensor** (`source_sensor`) | A `sensor` entity that reports the programme state, e.g. `sensor.dishwasher_operation_state` (Home Connect). Each sensor can only be used by one entry. |
 
-> **Important:** the "finished"/"running" value depends on your device and HA version (e.g.
-> `Finished`/`Run`, or lowercased `finished`/`run`). Check in *Developer Tools → States* which state
-> your sensor actually reports, and enter that value.
+**Step 2 — states, persons, co-claiming**
+
+| Field | Meaning |
+|---|---|
+| **"Running" state value** (`running_value`) | State while a programme runs. Default `run`. |
+| **"Finished" state value** (`finished_value`) | State at the end of a programme. Default `finished`. |
+| **Eligible persons** (`persons`) | One or more `person` entities. Each gets a claim button and a credit sensor. |
+| **Allow shared unloading** (`allow_co_claim`) | On (default): others can join after the first claim. Off: the first claim gets the full credit immediately. |
+| **Co-claim window** (`co_claim_window`) | Seconds after the first claim during which others can join, 5–600 (default 90). |
+| **Debounce** (`debounce_seconds`) | Ignore another finished cycle within this many seconds of the previous one, 0–120 (default 0 = off). |
+
+The two state fields are drop-downs filled from the sensor's list of possible states (its
+`options` attribute). If your sensor has no such list, or you need another value, just type it
+in. Comparison is case-insensitive.
+
+> **Home Connect:** since Home Assistant 2025.1 the *Operation state* sensor reports lowercase
+> values such as `run` and `finished`. Entries created with the old defaults `Run`/`Finished`
+> keep working, because values are compared without regard to case.
 
 ## Entities
 
-All entities live under a single device named **Dishwasher Duty**.
+All entities belong to one service device per dishwasher, named after the entry
+(**Dishwasher Duty** for the first one).
 
 | Entity | Meaning |
 |---|---|
-| `binary_sensor.dishwasher_duty_claimable` | `on` while the current cycle can still be claimed |
-| `sensor.dishwasher_duty_total_cycles` | Total number of finished cycles (`total_increasing`) |
-| `sensor.dishwasher_duty_<person>` | Accumulated credits per person, unit `credits` (`total_increasing`, + period attributes) |
-| `button.dishwasher_duty_claim_<person>` | "I unloaded it" button, one per person |
+| `binary_sensor.dishwasher_duty_claimable` | `on` while the current cycle can still be claimed. Attributes: `claim_open_since`, `co_claim_window_until`, `current_claimers` |
+| `sensor.dishwasher_duty_total_cycles` | Number of finished cycles, claimed or not. Attributes: `last_cycle_finished`, `current_cycle_claimed_by`, `last_claim_credits` |
+| `sensor.dishwasher_duty_<person>` | Credits of one person, unit `credits`. Attributes: `credits_total`, `credits_today`, `credits_this_week`, `credits_this_month`, `credits_this_year`, `claims_count_total`, `last_claim`, `person` |
+| `button.dishwasher_duty_claim_<person>` | "I unloaded it" — claims the open cycle for this person |
 
-## Services
+`<person>` is the object id of the `person` entity (`person.mia` → `…_mia`). A second dishwasher
+gets its own prefix, e.g. `sensor.dishwasher_duty_kitchen_dishwasher_total_cycles`.
 
-| Service | Description |
-|---|---|
-| `dishwasher_duty.claim` | `person` — claim the current cycle |
-| `dishwasher_duty.claim_multiple` | `persons` — claim for several people at once (credit shared equally) |
-| `dishwasher_duty.cancel_claim` | `person` — withdraw your own claim while the window is open |
-| `dishwasher_duty.get_statistics` | `start`, `end`, `person?` — statistics as a **service response** |
-| `dishwasher_duty.reset_statistics` | `person?` — reset history (⚠️ deletes data) |
+When you remove a person from the configuration, their sensor and button are removed as well.
 
-**Statistics example (with response):**
+## Actions (services)
+
+Wherever a person is expected you can pass the entity ID (`person.mia`), its object id (`mia`)
+or the display name (`Mia`), case-insensitive.
+
+| Action | Fields | Description |
+|---|---|---|
+| `dishwasher_duty.claim` | `person` | Claim the open cycle for one person. |
+| `dishwasher_duty.claim_multiple` | `persons` | Claim for several people at once (credit shared equally). |
+| `dishwasher_duty.cancel_claim` | `person` | Withdraw a claim while the window is open. Fails with an error if no cycle is open. |
+| `dishwasher_duty.get_statistics` | `start`, `end`, `person` (all optional) | Statistics as an **action response**. |
+| `dishwasher_duty.reset_statistics` | `person` (optional) | ⚠️ Deletes history: everything, or only this person's claims and credits. |
+
+Every action also has an optional **`config_entry_id`** field to select one dishwasher. Without
+it, claims go to the dishwasher(s) where the person is configured and `reset_statistics` affects
+all dishwashers. `get_statistics` needs it as soon as more than one dishwasher is set up.
+
+**Statistics example:**
 
 ```yaml
 action: dishwasher_duty.get_statistics
@@ -114,43 +159,43 @@ data:
 response_variable: stats
 ```
 
-`stats` then contains `total_cycles`, `unclaimed_cycles`, `per_person` (participations + sum of
-credits) and a chronological `timeline`.
+`stats` contains `start`, `end`, `total_cycles`, `unclaimed_cycles`, `per_person`
+(`participations` and summed `credits` per person) and a chronological `timeline` of cycles.
 
 ## Automation examples
 
-**1. Remind the household when a cycle is waiting to be claimed**
+**1. Tell the household when a cycle is waiting to be claimed**
 
 ```yaml
-automation:
-  - alias: "Dishwasher finished — who's unloading?"
-    trigger:
-      - platform: state
-        entity_id: binary_sensor.dishwasher_duty_claimable
-        to: "on"
-    action:
-      - service: notify.family
-        data:
-          title: "Dishwasher done 🍽️"
-          message: "It's clean! Tap your button in the app once you've unloaded it."
+alias: "Dishwasher finished — who's unloading?"
+triggers:
+  - trigger: state
+    entity_id: binary_sensor.dishwasher_duty_claimable
+    to: "on"
+actions:
+  - action: notify.family
+    data:
+      title: "Dishwasher done 🍽️"
+      message: "It's clean! Press your button once you've unloaded it."
 ```
 
 **2. Nudge again if nobody has claimed after 30 minutes**
 
 ```yaml
-automation:
-  - alias: "Dishwasher still not claimed"
-    trigger:
-      - platform: state
-        entity_id: binary_sensor.dishwasher_duty_claimable
-        to: "on"
-        for:
-          minutes: 30
-    action:
-      - service: notify.family
-        data:
-          message: "The dishwasher is still full 👀 — claim it when you empty it."
+alias: "Dishwasher still not claimed"
+triggers:
+  - trigger: state
+    entity_id: binary_sensor.dishwasher_duty_claimable
+    to: "on"
+    for:
+      minutes: 30
+actions:
+  - action: notify.family
+    data:
+      message: "The dishwasher is still full 👀 — claim it when you empty it."
 ```
+
+`notify.family` is a placeholder — use one of your own notify actions.
 
 **Example dashboard**
 
@@ -164,46 +209,46 @@ cards:
         name: Ready to unload?
       - entity: sensor.dishwasher_duty_total_cycles
         name: Total cycles
-  - type: horizontal-stack
-    cards:
-      - type: button
-        name: Luke did it
-        entity: button.dishwasher_duty_claim_luke
-        tap_action: { action: toggle }
-      - type: button
-        name: Leo did it
-        entity: button.dishwasher_duty_claim_leo
+      - entity: button.dishwasher_duty_claim_mia
+        name: Mia did it
+      - entity: button.dishwasher_duty_claim_ben
+        name: Ben did it
   - type: history-graph
     title: Credits
     entities:
-      - sensor.dishwasher_duty_luke
-      - sensor.dishwasher_duty_leo
+      - sensor.dishwasher_duty_mia
+      - sensor.dishwasher_duty_ben
 ```
 
-## How credit is split (defaults)
+## How credit is split
 
-- **One credit per cycle = 1.0.** For n claimers: `round(100/n)` cents each, remaining cents go to
-  the first claimers → sum is exactly 1.00.
-- **Credit timing:** credits are attributed to the moment of the claim (`claimed_at`).
-- **The window closes** on the next `Running` (not on `unavailable`/`Ready`), so you can still claim
-  after "Ready".
-- **Person slug** = the `object_id` of the `person` entity (`person.luke` → `…_luke`).
+- **One credit per cycle = 1.0.** With n claimers everybody gets ⌊100/n⌋ hundredths (rounded
+  down); the remaining hundredths go to the first claimers, so the sum is always exactly 1.00
+  (3 people → 0.34 / 0.33 / 0.33).
+- **Timing:** credits count for the moment the cycle was finalised (`claimed_at`).
+- **The window closes** when the next programme starts (the *running* value), not when the
+  machine goes to `ready`/`unavailable` — so you can still claim after the machine switched off.
+  If people had claimed, the cycle is finalised; otherwise it stays unclaimed but is still counted.
 
 ## Troubleshooting / FAQ
 
-- **Nothing happens when the dishwasher finishes.** The most common cause is a wrong **finished
-  value**. Open *Developer Tools → States*, look up your source sensor, run a cycle, and note the
-  exact state it shows when done. Enter that value in the integration's Options.
-- **`unavailable`/`unknown` are never counted** as a running or finished phase, so a briefly
-  unavailable sensor won't create a phantom cycle.
-- **A restart won't lose an open window.** After a HA restart, an open claim window is restored
-  including its remaining time.
-- **Pressing a button twice does nothing extra.** Claiming is idempotent — one contribution per
-  person per cycle.
-- **My total changed at midnight.** It didn't: a day/week/month/year rollover only resets the
-  period attributes (today/week/…), never the running total.
+- **Nothing happens when the dishwasher finishes.** Check the state values: open *Developer
+  tools → States*, look at your source sensor during and after a programme and compare with the
+  values in the entry's options. Upper/lower case does not matter.
+- **The sensor was `unavailable` in between.** `unavailable` and `unknown` are ignored and do not
+  replace the last real state. *run → unavailable → finished* is counted as one cycle;
+  *unavailable → finished* without a preceding run is not.
+- **A repair says the source sensor is missing.** The entity no longer exists (e.g. renamed or
+  the device was re-added). Open the entry's options and select the new sensor. The repair
+  disappears once the sensor exists again.
+- **A restart won't lose an open window.** It is restored with its remaining time; if it expired
+  during the restart, the cycle is finalised right away.
+- **Pressing a button twice does nothing extra.** One contribution per person and cycle.
+- **`cancel_claim` reports an error.** There is no open cycle at the moment.
+- **My period values changed at midnight.** Only today/week/month/year roll over; the total
+  never changes at midnight.
 
-**Enable debug logging** to see the cycle detection and claim logic in your log:
+**Debug logging:**
 
 ```yaml
 logger:
@@ -211,15 +256,28 @@ logger:
     custom_components.dishwasher_duty: debug
 ```
 
+**Diagnostics:** *Settings → Devices & services → Dishwasher Duty → ⋮ → Download diagnostics*
+(person entity IDs are replaced by placeholders).
+
+## Upgrading to 1.1.0
+
+- Minimum Home Assistant version is now **2025.2**.
+- Entity IDs, unique IDs, action names/fields and the stored history are unchanged. Entity names
+  are now translated; entity IDs you renamed yourself stay as they are.
+- The friendly name of the cycle counter changes from "… Total Cycles" to "… Total cycles".
+- `cancel_claim` without an open cycle now returns an error instead of silently doing nothing.
+- `get_statistics` requires `config_entry_id` when more than one dishwasher is set up.
+
 ## Further documentation
 
-- Technical docs (EN): [`docs/TECHNICAL.md`](docs/TECHNICAL.md)
-- User docs: [`docs/user/`](docs/user) (de, en, es, fr, nb, el, ja)
+- Technical documentation: [`docs/TECHNICAL.md`](docs/TECHNICAL.md)
+- User guides: [`docs/user/`](docs/user) (de, en, es, fr, nb, el, ja)
+- Changes: [`CHANGELOG.md`](CHANGELOG.md)
 
 ## Contributing
 
-Contributions are welcome! Please read [`CONTRIBUTING.md`](CONTRIBUTING.md) and open an issue or pull
-request on the [issue tracker](https://github.com/Jo-Highness/dishwasher_duty/issues).
+Contributions are welcome! Please read [`CONTRIBUTING.md`](CONTRIBUTING.md) and open an issue or
+pull request on the [issue tracker](https://github.com/Jo-Highness/dishwasher_duty/issues).
 
 ## License
 
@@ -228,5 +286,4 @@ Released under the [MIT License](LICENSE).
 ## Credits
 
 Created and maintained by [@Jo-Highness](https://github.com/Jo-Highness). Built for
-[Home Assistant](https://www.home-assistant.io/) and distributed via
-[HACS](https://hacs.xyz/).
+[Home Assistant](https://www.home-assistant.io/) and distributed via [HACS](https://hacs.xyz/).

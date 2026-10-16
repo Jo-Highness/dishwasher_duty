@@ -16,9 +16,9 @@ kaller en tjeneste) og får en kreditt på **1,0**. Hjelper flere til, deles 1,0
 
 ## 3. Oppsett
 - **Kildesensor:** maskinens operasjonstilstand-sensor.
-- **«Ferdig»-/«Kjører»-verdi:** tilstandsteksten. **Viktig:** sjekk under *Utviklerverktøy →
-  Tilstander* hvilken verdi sensoren faktisk har (f.eks. `Finished`/`Run` eller små bokstaver) og
-  skriv den inn.
+- **«Kjører»-/«Ferdig»-verdi** (andre steg): velg dem fra listen over tilstander sensoren tilbyr,
+  eller skriv inn din egen. Home Connect bruker `run` og `finished` (standard). Store/små
+  bokstaver spiller ingen rolle. Er du usikker, se *Utviklerverktøy → Tilstander*.
 - **Berettigede personer:** `person`-entitetene som tømmer.
 - **Delt tømming** (på som standard) + **co-claim-vindu** (90 s).
 
@@ -44,6 +44,8 @@ Returnerer totale sykluser, ikke-krevde sykluser, per person (deltakelser + kred
 kronologisk liste.
 
 ## 7. Merknader
-- `unavailable`/`unknown` teller aldri som kjører/ferdig.
+- `unavailable`/`unknown` ignoreres: *run → unavailable → finished* teller som én syklus;
+  *unavailable → finished* uten forutgående kjøring gjør ikke det.
+- `dishwasher_duty.cancel_claim` gir en feil hvis ingen syklus er åpen.
 - Å trykke flere ganger er ufarlig (ett bidrag per person/syklus).
 - `dishwasher_duty.reset_statistics` sletter historikk (alt eller per person) — bruk med omhu.

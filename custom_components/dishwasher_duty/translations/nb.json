@@ -3,42 +3,133 @@
     "step": {
       "user": {
         "title": "Dishwasher Duty",
-        "description": "Spor hvem som tømmer oppvaskmaskinen. Velg kildesensoren (f.eks. Home Connect-sensoren \"Operation state\") og personene som kan kreve en syklus.",
+        "description": "Spor hvem som tømmer oppvaskmaskinen. Velg først sensoren som rapporterer programstatusen, f.eks. Home Connect-sensoren \"Operation state\".",
         "data": {
-          "source_sensor": "Kildesensor",
-          "finished_value": "\"Ferdig\"-tilstandsverdi",
+          "source_sensor": "Kildesensor"
+        },
+        "data_description": {
+          "source_sensor": "En sensor som bytter til en \"kjører\"-verdi under et program og til en \"ferdig\"-verdi på slutten."
+        }
+      },
+      "settings": {
+        "title": "Tilstander, personer og delt tømming",
+        "description": "Kildesensor: `{sensor}`. Velg tilstandene den rapporterer mens den kjører og når den er ferdig - listen kommer fra sensoren, egne verdier er tillatt. Store/små bokstaver spiller ingen rolle.",
+        "data": {
           "running_value": "\"Kjører\"-tilstandsverdi",
+          "finished_value": "\"Ferdig\"-tilstandsverdi",
           "persons": "Berettigede personer",
           "allow_co_claim": "Tillat delt tømming (co-claim)",
-          "co_claim_window": "Co-claim-vindu (sekunder)",
-          "debounce_seconds": "Avstudsing (sekunder, 0 = av)"
+          "co_claim_window": "Co-claim-vindu",
+          "debounce_seconds": "Avstudsing"
+        },
+        "data_description": {
+          "running_value": "Tilstand mens et program kjører. Home Connect: `run`.",
+          "finished_value": "Tilstand når et program er ferdig. Home Connect: `finished`. Bare en endring fra kjører til denne verdien åpner en syklus som kan kreves.",
+          "persons": "Personer som får en kreve-knapp og en kredittsensor.",
+          "allow_co_claim": "Når på, kan andre bli med innenfor vinduet etter første krav, og kreditten på 1,0 deles.",
+          "co_claim_window": "Sekunder etter første krav der andre kan bli med (5-600).",
+          "debounce_seconds": "Ignorer en ny ferdig syklus innen så mange sekunder etter den forrige (0 = av). Hjelper mot ustabile sensorer."
         }
       }
     },
     "error": {
       "no_persons": "Velg minst én person.",
-      "no_finished_value": "Angi tilstandsverdien som betyr \"ferdig\"."
+      "no_finished_value": "Oppgi tilstandsverdien som betyr \"ferdig\".",
+      "no_running_value": "Oppgi tilstandsverdien som betyr \"kjører\".",
+      "same_values": "Verdiene for \"ferdig\" og \"kjører\" må være forskjellige."
+    },
+    "abort": {
+      "already_configured": "Denne sensoren spores allerede av Dishwasher Duty."
     }
   },
   "options": {
     "step": {
       "init": {
         "title": "Dishwasher Duty-innstillinger",
-        "description": "Juster kildesensor, ferdig-/kjører-verdier, berettigede personer og co-claim-atferd.",
+        "description": "Endre kildesensoren. Neste steg viser alle andre innstillinger.",
         "data": {
-          "source_sensor": "Kildesensor",
-          "finished_value": "\"Ferdig\"-tilstandsverdi",
+          "source_sensor": "Kildesensor"
+        },
+        "data_description": {
+          "source_sensor": "En sensor som bytter til en \"kjører\"-verdi under et program og til en \"ferdig\"-verdi på slutten."
+        }
+      },
+      "settings": {
+        "title": "Tilstander, personer og delt tømming",
+        "description": "Kildesensor: `{sensor}`. Velg tilstandene den rapporterer mens den kjører og når den er ferdig - listen kommer fra sensoren, egne verdier er tillatt. Store/små bokstaver spiller ingen rolle.",
+        "data": {
           "running_value": "\"Kjører\"-tilstandsverdi",
+          "finished_value": "\"Ferdig\"-tilstandsverdi",
           "persons": "Berettigede personer",
           "allow_co_claim": "Tillat delt tømming (co-claim)",
-          "co_claim_window": "Co-claim-vindu (sekunder)",
-          "debounce_seconds": "Avstudsing (sekunder, 0 = av)"
+          "co_claim_window": "Co-claim-vindu",
+          "debounce_seconds": "Avstudsing"
+        },
+        "data_description": {
+          "running_value": "Tilstand mens et program kjører. Home Connect: `run`.",
+          "finished_value": "Tilstand når et program er ferdig. Home Connect: `finished`. Bare en endring fra kjører til denne verdien åpner en syklus som kan kreves.",
+          "persons": "Personer som får en kreve-knapp og en kredittsensor.",
+          "allow_co_claim": "Når på, kan andre bli med innenfor vinduet etter første krav, og kreditten på 1,0 deles.",
+          "co_claim_window": "Sekunder etter første krav der andre kan bli med (5-600).",
+          "debounce_seconds": "Ignorer en ny ferdig syklus innen så mange sekunder etter den forrige (0 = av). Hjelper mot ustabile sensorer."
         }
       }
     },
     "error": {
       "no_persons": "Velg minst én person.",
-      "no_finished_value": "Angi tilstandsverdien som betyr \"ferdig\"."
+      "no_finished_value": "Oppgi tilstandsverdien som betyr \"ferdig\".",
+      "no_running_value": "Oppgi tilstandsverdien som betyr \"kjører\".",
+      "same_values": "Verdiene for \"ferdig\" og \"kjører\" må være forskjellige.",
+      "already_configured": "Denne sensoren spores allerede av en annen Dishwasher Duty-oppføring."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "claimable": {
+        "name": "Kan kreves"
+      }
+    },
+    "button": {
+      "claim": {
+        "name": "Krev {person}"
+      }
+    },
+    "sensor": {
+      "person_credits": {
+        "name": "{person}"
+      },
+      "total_cycles": {
+        "name": "Sykluser totalt"
+      }
+    }
+  },
+  "exceptions": {
+    "not_configured": {
+      "message": "Dishwasher Duty er ikke satt opp (eller ikke lastet)."
+    },
+    "no_open_cycle": {
+      "message": "{title}: det finnes ingen åpen syklus å kreve akkurat nå."
+    },
+    "person_not_authorised": {
+      "message": "{title}: {person} er ikke blant de konfigurerte personene."
+    },
+    "unknown_person": {
+      "message": "{person} er ikke konfigurert i noen Dishwasher Duty-oppføring."
+    },
+    "entry_not_found": {
+      "message": "Det finnes ingen Dishwasher Duty-oppføring med ID {entry_id}."
+    },
+    "entry_not_loaded": {
+      "message": "Dishwasher Duty-oppføringen \"{title}\" er ikke lastet."
+    },
+    "multiple_entries": {
+      "message": "Flere Dishwasher Duty-oppføringer er satt opp - velg én med feltet config_entry_id."
+    }
+  },
+  "issues": {
+    "source_sensor_missing": {
+      "title": "Dishwasher Duty: kildesensoren {entity_id} mangler",
+      "description": "Oppføringen \"{title}\" overvåker `{entity_id}`, men den entiteten finnes ikke lenger, så ferdige sykluser kan ikke oppdages. Åpne alternativene for oppføringen og velg den nye sensoren (f.eks. etter at Home Connect-enheten er omdøpt eller lagt til på nytt). Meldingen forsvinner når sensoren finnes igjen."
     }
   },
   "services": {
@@ -46,37 +137,78 @@
       "name": "Krev",
       "description": "Krev den åpne syklusen for én person.",
       "fields": {
-        "person": {"name": "Person", "description": "Person-entitets-ID eller slug."}
+        "person": {
+          "name": "Person",
+          "description": "Person-entitets-ID (person.mia), slug (mia) eller visningsnavn (Mia)."
+        },
+        "config_entry_id": {
+          "name": "Oppvaskmaskin",
+          "description": "Valgfritt - Dishwasher Duty-oppføringen som skal brukes. Påkrevd for statistikk når flere oppvaskmaskiner er satt opp."
+        }
       }
     },
     "claim_multiple": {
       "name": "Krev (flere)",
       "description": "Krev den åpne syklusen for flere personer samtidig (kreditt deles likt).",
       "fields": {
-        "persons": {"name": "Personer", "description": "Liste over person-entitets-IDer."}
+        "persons": {
+          "name": "Personer",
+          "description": "Liste over personer (entitets-ID, slug eller visningsnavn)."
+        },
+        "config_entry_id": {
+          "name": "Oppvaskmaskin",
+          "description": "Valgfritt - Dishwasher Duty-oppføringen som skal brukes. Påkrevd for statistikk når flere oppvaskmaskiner er satt opp."
+        }
       }
     },
     "cancel_claim": {
       "name": "Avbryt krav",
       "description": "Trekk tilbake en persons krav mens vinduet fortsatt er åpent.",
       "fields": {
-        "person": {"name": "Person", "description": "Person-entitets-ID eller slug."}
+        "person": {
+          "name": "Person",
+          "description": "Person-entitets-ID (person.mia), slug (mia) eller visningsnavn (Mia)."
+        },
+        "config_entry_id": {
+          "name": "Oppvaskmaskin",
+          "description": "Valgfritt - Dishwasher Duty-oppføringen som skal brukes. Påkrevd for statistikk når flere oppvaskmaskiner er satt opp."
+        }
       }
     },
     "get_statistics": {
       "name": "Hent statistikk",
       "description": "Returnerer strukturert tømmestatistikk for et tidsrom.",
       "fields": {
-        "start": {"name": "Start", "description": "Start på tidsrommet (inkludert)."},
-        "end": {"name": "Slutt", "description": "Slutt på tidsrommet (inkludert)."},
-        "person": {"name": "Person", "description": "Valgfritt - begrens til én person."}
+        "start": {
+          "name": "Start",
+          "description": "Start på tidsrommet (inkludert). Tom = \"fra begynnelsen\"."
+        },
+        "end": {
+          "name": "Slutt",
+          "description": "Slutt på tidsrommet (inkludert). Tom = \"til nå\"."
+        },
+        "person": {
+          "name": "Person",
+          "description": "Valgfritt - begrens oversikten til én person."
+        },
+        "config_entry_id": {
+          "name": "Oppvaskmaskin",
+          "description": "Valgfritt - Dishwasher Duty-oppføringen som skal brukes. Påkrevd for statistikk når flere oppvaskmaskiner er satt opp."
+        }
       }
     },
     "reset_statistics": {
       "name": "Nullstill statistikk",
-      "description": "Nullstiller lagret syklushistorikk (alt eller for én person).",
+      "description": "Nullstiller lagret syklushistorikk (alt eller for én person). Kan ikke angres.",
       "fields": {
-        "person": {"name": "Person", "description": "Valgfritt - nullstill kun denne personen."}
+        "person": {
+          "name": "Person",
+          "description": "Valgfritt - nullstill kun krav og kreditter for denne personen."
+        },
+        "config_entry_id": {
+          "name": "Oppvaskmaskin",
+          "description": "Valgfritt - Dishwasher Duty-oppføringen som skal brukes. Påkrevd for statistikk når flere oppvaskmaskiner er satt opp."
+        }
       }
     }
   }

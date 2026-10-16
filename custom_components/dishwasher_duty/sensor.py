@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
-from homeassistant.components.sensor import SensorEntity, SensorStateClass
-from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from typing import Any
 
+from homeassistant.components.sensor import SensorEntity, SensorStateClass
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
+
+from . import DishwasherDutyConfigEntry
 from .const import (
     ATTR_CLAIMS_COUNT_TOTAL,
     ATTR_CREDITS_THIS_MONTH,
@@ -18,19 +20,20 @@ from .const import (
     ATTR_LAST_CLAIM,
     ATTR_LAST_CLAIM_CREDITS,
     ATTR_LAST_CYCLE_FINISHED,
-    DOMAIN,
 )
-from .coordinator import DishwasherDutyCoordinator, person_key
-from .entity import DishwasherDutyEntity
+from .coordinator import DishwasherDutyCoordinator
+from .entity import DishwasherDutyEntity, DishwasherDutyPersonEntity
+
+PARALLEL_UPDATES = 0
 
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: ConfigEntry,
-    async_add_entities: AddEntitiesCallback,
+    entry: DishwasherDutyConfigEntry,
+    async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
     """Set up the cycle counter and per-person credit sensors."""
-    coordinator: DishwasherDutyCoordinator = hass.data[DOMAIN][entry.entry_id]
+    coordinator = entry.runtime_data
     entities: list[SensorEntity] = [TotalCyclesSensor(coordinator)]
     entities.extend(PersonCreditsSensor(coordinator, p) for p in coordinator.persons)
     async_add_entities(entities)
@@ -39,20 +42,18 @@ async def async_setup_entry(
 class TotalCyclesSensor(DishwasherDutyEntity, SensorEntity):
     """Overall counter of finished dishwasher cycles."""
 
-    _attr_icon = "mdi:dishwasher"
+    _attr_translation_key = "total_cycles"
     _attr_state_class = SensorStateClass.TOTAL_INCREASING
 
     def __init__(self, coordinator: DishwasherDutyCoordinator) -> None:
         super().__init__(coordinator, "total_cycles")
-        self._attr_name = "Dishwasher Duty Total Cycles"
-        self.entity_id = "sensor.dishwasher_duty_total_cycles"
 
     @property
     def native_value(self) -> int:
         return self.coordinator.total_cycles
 
     @property
-    def extra_state_attributes(self) -> dict:
+    def extra_state_attributes(self) -> dict[str, Any]:
         data = self.coordinator.data or {}
         return {
             ATTR_LAST_CYCLE_FINISHED: data.get(ATTR_LAST_CYCLE_FINISHED),
@@ -61,25 +62,23 @@ class TotalCyclesSensor(DishwasherDutyEntity, SensorEntity):
         }
 
 
-class PersonCreditsSensor(DishwasherDutyEntity, SensorEntity):
+class PersonCreditsSensor(DishwasherDutyPersonEntity, SensorEntity):
     """Accumulated unload credits for one person."""
 
-    _attr_icon = "mdi:account-check"
+    _attr_translation_key = "person_credits"
     _attr_state_class = SensorStateClass.TOTAL_INCREASING
     _attr_native_unit_of_measurement = "credits"
+    _attr_suggested_display_precision = 2
 
     def __init__(self, coordinator: DishwasherDutyCoordinator, person: str) -> None:
-        super().__init__(coordinator, f"person_{person_key(person)}")
-        self._person = person
-        self._attr_name = f"Dishwasher Duty {person_key(person).title()}"
-        self.entity_id = f"sensor.dishwasher_duty_{person_key(person)}"
+        super().__init__(coordinator, "person", person)
 
     @property
     def native_value(self) -> float:
         return self.coordinator.person_stats(self._person)[ATTR_CREDITS_TOTAL]
 
     @property
-    def extra_state_attributes(self) -> dict:
+    def extra_state_attributes(self) -> dict[str, Any]:
         stats = self.coordinator.person_stats(self._person)
         return {
             ATTR_CREDITS_TOTAL: stats[ATTR_CREDITS_TOTAL],

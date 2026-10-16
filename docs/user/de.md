@@ -4,7 +4,7 @@ Dishwasher Duty merkt sich, **wer die Spülmaschine ausräumt**, und führt dar�
 
 ## 1. Wie es funktioniert
 Die Integration beobachtet einen Sensor deiner Spülmaschine (z. B. Home Connect „Operation
-state"). Wenn dieser von **Läuft → Fertig** wechselt, entsteht ein „offener Zyklus". Wer
+state"). Wenn dieser von **läuft → fertig** (z. B. `run` → `finished`) wechselt, entsteht ein „offener Zyklus". Wer
 ausräumt, drückt seinen Knopf (oder nutzt einen Service) und bekommt die Gutschrift **1,0**.
 Räumen mehrere gemeinsam aus, wird die 1,0 fair geteilt.
 
@@ -17,9 +17,10 @@ Räumen mehrere gemeinsam aus, wird die 1,0 fair geteilt.
 
 ## 3. Einrichtung
 - **Quell-Sensor:** der Operation-State-Sensor deiner Maschine.
-- **„Fertig"-/„Läuft"-Wert:** der State-Text für fertig/läuft. **Wichtig:** prüfe unter
-  *Entwicklerwerkzeuge → Zustände*, welchen Wert dein Sensor wirklich hat (z. B. `Finished`/`Run`
-  oder klein `finished`/`run`), und trage ihn ein.
+- **„Läuft"-/„Fertig"-Wert** (zweiter Schritt): aus der Liste der Zustände wählen, die dein
+  Sensor anbietet, oder selbst eintippen. Home Connect meldet `run` und `finished` (Standard).
+  Groß-/Kleinschreibung ist egal. Im Zweifel unter *Entwicklerwerkzeuge → Zustände* während und
+  nach einem Programm nachsehen.
 - **Berechtigte Personen:** die `person`-Entitäten, die ausräumen.
 - **Gemeinsames Ausräumen** (Default an) + **Co-Claim-Fenster** (Default 90 s): Zeitfenster, in
   dem nach dem ersten Knopfdruck weitere Personen beitreten können.
@@ -46,6 +47,10 @@ Ergebnis: Gesamtzyklen, nicht geclaimte Zyklen, pro Person (Beteiligungen + Guts
 eine chronologische Liste.
 
 ## 7. Hinweise
-- `unavailable`/`unknown` (z. B. Geräteneustart) zählen nie als Lauf/Fertig.
+- `unavailable`/`unknown` (z. B. Geräteneustart) werden ignoriert: *run → unavailable → finished*
+  zählt trotzdem als ein Zyklus, *unavailable → finished* ohne Lauf nicht.
+- `dishwasher_duty.cancel_claim` meldet einen Fehler, wenn kein Zyklus offen ist.
+- Mehrere Spülmaschinen? Die Integration je Quell-Sensor einmal hinzufügen; jede bekommt eigene
+  Entitäten.
 - Mehrfaches Drücken schadet nicht (1 Beitrag je Person/Zyklus).
 - `dishwasher_duty.reset_statistics` löscht Historie (ganz oder pro Person) – mit Bedacht nutzen.

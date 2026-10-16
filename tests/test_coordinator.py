@@ -7,10 +7,17 @@ from homeassistant.exceptions import ServiceValidationError
 import pytest
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from custom_components.dishwasher_duty.const import DOMAIN
+from custom_components.dishwasher_duty.const import (
+    CONF_FINISHED_VALUE,
+    CONF_RUNNING_VALUE,
+    DEFAULT_FINISHED_VALUE,
+    DEFAULT_RUNNING_VALUE,
+    DOMAIN,
+)
 from custom_components.dishwasher_duty.coordinator import (
     DishwasherDutyCoordinator,
     distribute_credits,
+    states_match,
 )
 
 from .conftest import build_data, feed
@@ -212,3 +219,176 @@ async def test_claim_by_display_name(hass, make_coordinator):
     await feed(c, "Run", "Finished")
     await c.async_claim("Alice Example")
     assert c.cycles[-1]["credits"] == {"person.alice": 1.0}
+
+
+# --------------------------------------------------------------------------
+# State values: case-insensitive, lowercase Home Connect values (HA 2025.1+)
+# --------------------------------------------------------------------------
+async def test_lowercase_states_match_legacy_config(make_coordinator):
+    """An entry configured with Run/Finished also matches run/finished."""
+    c = await make_coordinator()  # configured "Run" / "Finished"
+    await feed(c, "run", "finished")
+    assert c.total_cycles == 1
+
+
+async def test_default_values_are_lowercase(make_coordinator):
+    c = await make_coordinator()
+    c._config.pop(CONF_FINISHED_VALUE)
+    c._config.pop(CONF_RUNNING_VALUE)
+    assert (c.running_value, c.finished_value) == (DEFAULT_RUNNING_VALUE, DEFAULT_FINISHED_VALUE)
+    assert (DEFAULT_RUNNING_VALUE, DEFAULT_FINISHED_VALUE) == ("run", "finished")
+    await feed(c, "Run", "FINISHED")
+    assert c.total_cycles == 1
+
+
+def test_states_match():
+    assert states_match("finished", "Finished")
+    assert states_match(" Run ", "run")
+    assert not states_match(None, "run")
+    assert not states_match("running", "run")
+
+
+# --------------------------------------------------------------------------
+# unavailable/unknown during a programme
+# --------------------------------------------------------------------------
+@pytest.mark.parametrize("glitch", ["unavailable", "unknown"])
+async def test_unavailable_mid_run_still_counts(make_coordinator, glitch):
+    """run -> unavailable -> finished is one valid cycle (was lost before 1.1)."""
+    c = await make_coordinator()
+    await feed(c, "run", glitch, "finished")
+    assert c.total_cycles == 1
+    assert c.last_state == "finished"
+
+
+async def test_unavailable_is_not_stored_as_last_state(make_coordinator):
+    c = await make_coordinator()
+    await feed(c, "ready", "unavailable")
+    assert c.last_state == "ready"
+    # A finished cycle after unavailable must not double count.
+    await feed(c, "run", "finished", "unavailable", "finished")
+    assert c.total_cycles == 1
+
+
+async def test_restore_drops_stored_unavailable(hass, hass_storage):
+    entry = MockConfigEntry(domain=DOMAIN, data=build_data())
+    entry.add_to_hass(hass)
+    hass_storage[f"{DOMAIN}.{entry.entry_id}"] = {
+        "version": 1,
+        "key": f"{DOMAIN}.{entry.entry_id}",
+        "data": {"total_cycles": 0, "cycles": [], "last_state": "unavailable"},
+    }
+    c = DishwasherDutyCoordinator(hass, entry)
+    await c._async_restore()
+    assert c.last_state is None
+
+
+# --------------------------------------------------------------------------
+# Debounce
+# --------------------------------------------------------------------------
+async def test_debounce_suppresses_rapid_second_cycle(make_coordinator, freezer):
+    c = await make_coordinator(debounce_seconds=30)
+    freezer.move_to("2026-05-15 12:00:00")
+    await feed(c, "run", "finished")
+    freezer.tick(10)
+    await feed(c, "run", "finished")
+    assert c.total_cycles == 1  # second one within 30 s -> ignored
+    freezer.tick(31)
+    await feed(c, "run", "finished")
+    assert c.total_cycles == 2
+
+
+async def test_debounce_off_counts_every_cycle(make_coordinator):
+    c = await make_coordinator(debounce_seconds=0)
+    await feed(c, "run", "finished", "run", "finished")
+    assert c.total_cycles == 2
+
+
+# --------------------------------------------------------------------------
+# cancel_claim / reset_statistics
+# --------------------------------------------------------------------------
+async def test_cancel_claim_without_open_window_raises(make_coordinator):
+    c = await make_coordinator()
+    with pytest.raises(ServiceValidationError) as err:
+        await c.async_cancel_claim("person.alice")
+    assert err.value.translation_key == "no_open_cycle"
+
+
+async def test_claim_errors_are_translated(make_coordinator):
+    c = await make_coordinator()
+    with pytest.raises(ServiceValidationError) as err:
+        await c.async_claim("person.alice")
+    assert err.value.translation_domain == DOMAIN
+    assert err.value.translation_key == "no_open_cycle"
+    await feed(c, "run", "finished")
+    with pytest.raises(ServiceValidationError) as err:
+        await c.async_claim("person.dave")
+    assert err.value.translation_key == "person_not_authorised"
+    assert err.value.translation_placeholders["person"] == "person.dave"
+
+
+async def test_reset_all(make_coordinator):
+    c = await make_coordinator()
+    await feed(c, "run", "finished")
+    await c.async_claim("person.alice")
+    await c.async_reset_statistics(None)
+    assert c.total_cycles == 0
+    assert c.cycles == []
+    assert c.data["claim_open"] is False
+    assert c._unsub_timer is None
+
+
+async def test_reset_person_unclaims_cycles_only_they_claimed(make_coordinator):
+    c = await make_coordinator(allow_co_claim=False)
+    await feed(c, "run", "finished")
+    await c.async_claim("person.alice")
+    await c.async_reset_statistics("person.alice")
+    cycle = c.cycles[-1]
+    assert cycle["claimers"] == []
+    assert cycle["credits"] == {}
+    assert cycle["status"] == "unclaimed"
+    assert cycle["claimed_at"] is None
+    assert c.person_stats("person.alice")["credits_total"] == 0
+    assert c.get_statistics(None, None, None)["unclaimed_cycles"] == 1
+
+
+async def test_reset_person_keeps_co_claimers(make_coordinator):
+    c = await make_coordinator()
+    await feed(c, "run", "finished")
+    await c.async_claim_multiple(["person.alice", "person.bob"])
+    await c._async_finalize_current()
+    await c.async_reset_statistics("Alice")  # slug works too
+    cycle = c.cycles[-1]
+    assert cycle["claimers"] == ["person.bob"]
+    assert cycle["credits"] == {"person.bob": 0.5}
+    assert cycle["status"] == "claimed"
+
+
+async def test_reset_person_in_open_window(make_coordinator):
+    c = await make_coordinator()
+    await feed(c, "run", "finished")
+    await c.async_claim("person.alice")
+    await c.async_reset_statistics("person.alice")
+    assert c.data["claim_open"] is True
+    assert c.data["current_claimers"] == []
+    assert c.data["co_claim_window_until"] is None
+
+
+# --------------------------------------------------------------------------
+# Snapshot
+# --------------------------------------------------------------------------
+async def test_claimers_attributes_share_one_source(make_coordinator):
+    c = await make_coordinator()
+    await feed(c, "run", "finished")
+    await c.async_claim("person.alice")
+    assert c.data["current_claimers"] == ["person.alice"]
+    assert c.data["current_cycle_claimed_by"] == c.data["current_claimers"]
+    # The snapshot is a copy, not the live list.
+    c.cycles[-1]["claimers"].append("person.bob")
+    assert c.data["current_cycle_claimed_by"] == ["person.alice"]
+
+
+def test_distribute_credits_floors():
+    """floor(100/n) cents each, leftovers to the first claimers."""
+    assert distribute_credits(["a", "b", "c"]) == {"a": 0.34, "b": 0.33, "c": 0.33}
+    six = distribute_credits([str(i) for i in range(6)])
+    assert list(six.values()) == [0.17, 0.17, 0.17, 0.17, 0.16, 0.16]

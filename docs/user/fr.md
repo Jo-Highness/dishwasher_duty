@@ -17,9 +17,10 @@ participent, le 1,0 est partagé équitablement.
 
 ## 3. Configuration
 - **Capteur source :** le capteur d'état de votre machine.
-- **Valeur « Terminé »/« En marche » :** le texte d'état. **Important :** vérifiez dans
-  *Outils de développement → États* la valeur réellement renvoyée par votre capteur (par ex.
-  `Finished`/`Run` ou en minuscules) et saisissez-la.
+- **Valeur « En marche »/« Terminé »** (deuxième étape) : choisissez-les dans la liste des états
+  proposés par votre capteur ou saisissez votre propre valeur. Home Connect utilise `run` et
+  `finished` (valeurs par défaut). La casse n'a pas d'importance. En cas de doute, consultez
+  *Outils de développement → États*.
 - **Personnes autorisées :** les entités `person` qui vident.
 - **Vidage partagé** (activé par défaut) + **fenêtre de co-revendication** (90 s).
 
@@ -45,7 +46,9 @@ Renvoie le total des cycles, les cycles non revendiqués, par personne (particip
 et une liste chronologique.
 
 ## 7. Remarques
-- `unavailable`/`unknown` ne comptent jamais comme en marche/terminé.
+- `unavailable`/`unknown` sont ignorés : *run → unavailable → finished* compte comme un cycle ;
+  *unavailable → finished* sans marche préalable, non.
+- `dishwasher_duty.cancel_claim` renvoie une erreur si aucun cycle n'est ouvert.
 - Appuyer plusieurs fois est sans effet (une contribution par personne/cycle).
 - `dishwasher_duty.reset_statistics` efface l'historique (tout ou par personne) — à utiliser avec
   précaution.

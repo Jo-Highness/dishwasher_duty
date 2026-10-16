@@ -26,13 +26,13 @@ Thanks for your interest in improving Dishwasher Duty! This is a custom
 
 ## Development setup
 
-Requires Python 3.12+ (matching current Home Assistant).
+Requires Python 3.13 (matching current Home Assistant).
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 pip install --upgrade pip
-pip install ruff pytest pytest-homeassistant-custom-component
+pip install ruff -r requirements_test.txt
 ```
 
 ## Linting and formatting
@@ -55,7 +55,7 @@ ruff format .
 ## Running tests
 
 ```bash
-pytest
+pytest --cov=custom_components.dishwasher_duty --cov-report=term-missing
 ```
 
 ## Commit messages
