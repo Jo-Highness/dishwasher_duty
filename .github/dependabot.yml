@@ -7,3 +7,10 @@ updates:
     labels:
       - dependencies
       - ci
+
+  - package-ecosystem: pip
+    directory: "/"
+    schedule:
+      interval: weekly
+    labels:
+      - dependencies
